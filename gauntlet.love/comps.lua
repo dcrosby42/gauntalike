@@ -10,7 +10,7 @@ Comp.define('script',{'scriptName','','on','call'})
 
 Comp.define("timer", {'t',0, 'reset',0, 'countDown',true, 'loop',false, 'alarm',false})
 
-Comp.define("controller", {'id','','leftx',0,'lefty',0,'rightx',0,'righty',0})
+Comp.define("controller", {'id','','leftx',0,'lefty',0,'rightx',0,'righty',0,'r1',0,'r2',0,'r3',0,'l1',0,'l2',0,'l3',0,'face1',0,'face2',0,'face3',0,'face4',0, 'select',0,'start',0})
 
 
 Comp.define("img", {'imgId','','offx',0,'offy',0,'sx',1,'sy',1,'r',0,'color',{255,255,255}})
@@ -26,4 +26,5 @@ Comp.define("output", {'kind',''})
 
 Comp.define("debug", {'value',''})
 
-Comp.define("hero", {'id',''})
+Comp.define("hero", {'id','','bow','rest', 'bowtimer',0, 'speed',200})
+Comp.define("arrow", {})

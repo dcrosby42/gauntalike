@@ -55,7 +55,7 @@ Module.handleJoystick = function(action, callback)
   elseif action.controlType == 'button' then
     button = layout.buttons[action.control]
     if button then
-      callback(button,value)
+      callback(button,action.value)
       -- addInputEvent(input, {type='controller', id=controllerId, input=button, action=value})
     else
       print("UNHANDLED JOYSTICK BUTTON"..tdebug(action))

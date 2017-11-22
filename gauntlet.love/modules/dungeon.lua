@@ -17,24 +17,31 @@ local heroControllerSystem = require 'systems.herocontroller'
 
 local Joystick = require 'util.joystick'
 
+local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,res)
+  e.pos.x = e.pos.x + (e.vel.dx * input.dt)
+  e.pos.y = e.pos.y + (e.vel.dy * input.dt)
+  if e.pos.x < -100 or e.pos.x > 1500 or e.pos.y < -100 or e.pos.y > 1500 then
+    estore:destroyEntity(e)
+  end
+end)
 
 local RunSystems = iterateFuncs({
   -- outputCleanupSystem,
   -- timerSystem,
   -- selfDestructSystem,
   controllerSystem,
+  heroControllerSystem,
   -- scriptSystem,
   -- characterControllerSystem,
   -- gravitySystem,
   -- isoSpriteAnimSystem,
   -- avatarControlSystem,
-  -- moverSystem,
+  moverSystem,
   -- animSystem,
   -- zChildrenSystem,
   -- blockMapSystem,
   -- blockMoverSystem,
   -- effectsSystem,
-  heroControllerSystem,
 })
 
 local setupEstore
@@ -48,12 +55,11 @@ end
 
 function setupEstore(estore)
   estore:newEntity({
-    {'pos', {x=100,y=100, r=0, ox=10, oy=5}},
+    {'pos', {x=100,y=100, r=0, ox=10, oy=5, sx=1.5,sy=1.5}},
     {'vel', {dx=0,dy=0}},
-    -- {'rot', {rad=0}},
     {'controller', {id="one"}},
-    {'hero', {}},
-    {'debug',{name="dirmag",value=0}}
+    {'hero', {speed=200}},
+    -- {'debug',{name="dirmag",value=0}}
   })
 
 end
@@ -80,16 +86,34 @@ end
 --
 -- DRAW
 --
+local BowArts = {
+  rest  ="  -}->",
+  drawn ="=--}>",
+  fired="     }",
+}
+
+local ArrowArts = {
+  default="=-->"
+}
+
+local function drawAscii(str, p, color)
+  love.graphics.setColor(unpack(color))
+  love.graphics.print(str, p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
+end
+
 local function drawHero(e)
-  love.graphics.setColor(255,255,255)
-  local p = e.pos
-  local dirmag = e.debugs.dirmag.value
-  love.graphics.print(tostring(dirmag).."---->", p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
+  local key = e.hero.bow
+  drawAscii(BowArts[key], e.pos, {255,255,255})
+end
+
+local function drawArrow(e)
+  drawAscii(ArrowArts.default, e.pos, {150,150,200})
 end
 
 Module.drawWorld = function(world)
   world.estore:walkEntities(hasComps('pos'), function(e)
     if e.hero then drawHero(e) end
+    if e.arrow then drawArrow(e) end
   end)
 end
 
