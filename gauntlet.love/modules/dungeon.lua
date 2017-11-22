@@ -53,6 +53,7 @@ function setupEstore(estore)
     -- {'rot', {rad=0}},
     {'controller', {id="one"}},
     {'hero', {}},
+    {'debug',{name="dirmag",value=0}}
   })
 
 end
@@ -82,7 +83,8 @@ end
 local function drawHero(e)
   love.graphics.setColor(255,255,255)
   local p = e.pos
-  love.graphics.print("Hero", p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
+  local dirmag = e.debugs.dirmag.value
+  love.graphics.print(tostring(dirmag).."---->", p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
 end
 
 Module.drawWorld = function(world)
