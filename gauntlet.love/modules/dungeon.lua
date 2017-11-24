@@ -62,11 +62,20 @@ function setupEstore(estore)
     -- {'debug',{name="dirmag",value=0}}
   })
 
+  estore:newEntity({
+    {'pos', {x=300,y=200, r=math.pi, ox=10, oy=5, sx=1.5,sy=1.5}},
+    {'vel', {dx=0,dy=0}},
+    {'controller', {id="two"}},
+    {'hero', {speed=200}},
+    -- {'debug',{name="dirmag",value=0}}
+  })
+
 end
 
 --
 -- UPDATE
 --
+local ControllerIds = { "one", "two" }
 
 Module.updateWorld = function(world,action)
   if action.type == 'tick' then
@@ -75,8 +84,8 @@ Module.updateWorld = function(world,action)
     world.input.events = {}
 
   elseif action.type == 'joystick' then
-    Joystick.handleJoystick(action, function(input,action)
-      addInputEvent(world.input, {type='controller', id='one', input=input, action=action})
+    Joystick.handleJoystick(action, ControllerIds, function(controllerId, input,action)
+      addInputEvent(world.input, {type='controller', id=controllerId, input=input, action=action})
     end)
   end
 

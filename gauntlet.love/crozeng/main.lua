@@ -221,9 +221,10 @@ function love.touchreleased(id, x,y, dx,dy, pressure)
   updateWorld(toTouchAction("released",id,x,y,dx,dy))
 end
 
-local joystickAction = {type="joystick", id='TODO', controlType='', control='', value=0}
-function toJoystickAction(controlType, control, value)
-  joystickAction.id = 'TODO'
+local joystickAction = {type="joystick", joystickId=0, instanceId=0, controlType='', control='', value=0}
+function toJoystickAction(joystick, controlType, control, value)
+  joystickAction.joystickId, joystickAction.instanceId = joystick:getID()
+  joystickAction.name = joystick:getName()
   joystickAction.controlType=controlType
   joystickAction.control=control
   joystickAction.value=(value or 0)
@@ -231,15 +232,16 @@ function toJoystickAction(controlType, control, value)
 end
 
 function love.joystickaxis( joystick, axis, value )
-  updateWorld(toJoystickAction("axis", axis, value))
+  updateWorld(toJoystickAction(joystick, "axis", axis, value))
 end
 
 function love.joystickpressed( joystick, button )
-  updateWorld(toJoystickAction("button",button,1))
+  local id,inst = joystick:getID()
+  updateWorld(toJoystickAction(joystick, "button",button,1))
 end
 
 function love.joystickreleased( joystick, button )
-  updateWorld(toJoystickAction("button", button,0))
+  updateWorld(toJoystickAction(joystick, "button", button,0))
 end
 
 function love.textinput(text)
