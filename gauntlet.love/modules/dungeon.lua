@@ -16,6 +16,7 @@ local heroControllerSystem = require 'systems.herocontroller'
 -- local gravitySystem = require 'systems.gravity'
 
 local Joystick = require 'util.joystick'
+local KeyboardSimGamepad = require 'util.keyboardsimgamepad'
 
 local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,res)
   e.pos.x = e.pos.x + (e.vel.dx * input.dt)
@@ -24,6 +25,7 @@ local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,re
     estore:destroyEntity(e)
   end
 end)
+
 
 local RunSystems = iterateFuncs({
   -- outputCleanupSystem,
@@ -77,6 +79,7 @@ end
 --
 local ControllerIds = { "one", "two" }
 
+local keyboardOpts = { devId="one" }
 Module.updateWorld = function(world,action)
   if action.type == 'tick' then
     world.input.dt = action.dt
@@ -87,6 +90,12 @@ Module.updateWorld = function(world,action)
     Joystick.handleJoystick(action, ControllerIds, function(controllerId, input,action)
       addInputEvent(world.input, {type='controller', id=controllerId, input=input, action=action})
     end)
+
+  elseif action.type == 'keyboard' then
+    KeyboardSimGamepad.handleKeyboard(action, keyboardOpts, function(controllerId, input,action)
+      addInputEvent(world.input, {type='controller',id=controllerId, input=input, action=action})
+    end)
+
   end
 
   return world
