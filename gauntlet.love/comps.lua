@@ -26,5 +26,9 @@ Comp.define("output", {'kind',''})
 
 Comp.define("debug", {'value',''})
 
-Comp.define("hero", {'id','','bow','rest', 'bowtimer',0, 'speed',200})
+Comp.define("hero", {'id','','bow','rest', 'bowtimer',0, 'speed',200,'hiSpeed',200,'loSpeed',100})
 Comp.define("arrow", {})
+
+Comp.define('physicsWorld', {'world',0, 'gx',0,'gy',0,'allowSleep',true})
+Comp.define('body', {})
+Comp.define("force", {'fx',0,'fy',0})

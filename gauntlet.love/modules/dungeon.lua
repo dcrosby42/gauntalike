@@ -9,6 +9,7 @@ local Comps = require 'comps'
 -- local scriptSystem = require 'systems.script'
 local controllerSystem = require 'systems.controller'
 local heroControllerSystem = require 'systems.herocontroller'
+local Physics = require 'systems.physics'
 -- local isoSpriteAnimSystem = require 'systems.isospriteanim'
 -- local characterControllerSystem = require 'systems.charactercontroller'
 -- local blockMoverSystem = require 'systems.blockmover'
@@ -33,12 +34,13 @@ local RunSystems = iterateFuncs({
   -- selfDestructSystem,
   controllerSystem,
   heroControllerSystem,
+  Physics.update,
   -- scriptSystem,
   -- characterControllerSystem,
   -- gravitySystem,
   -- isoSpriteAnimSystem,
   -- avatarControlSystem,
-  moverSystem,
+  -- moverSystem,
   -- animSystem,
   -- zChildrenSystem,
   -- blockMapSystem,
@@ -51,25 +53,35 @@ Module.newWorld = function()
   local world={}
   world.input = { dt=0, events={} }
   world.estore = Estore:new()
+  world.resources = {}
+  world.resources.caches = {}
   setupEstore(world.estore)
   return world
 end
 
 function setupEstore(estore)
-  estore:newEntity({
+
+  -- estore:newEntity({
+  --   {'pos', {x=300,y=200, r=math.pi, ox=10, oy=5, sx=1.5,sy=1.5}},
+  --   {'vel', {dx=0,dy=0}},
+  --   {'controller', {id="two"}},
+  --   {'hero', {speed=200}},
+  -- })
+  local pw = estore:newEntity({
+    {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
+  })
+  pw:newChild({
+    {'pos', {x=200,y=100}},
+    {'vel', {dx=0,dy=50}},
+    {'body',{kind='testbox'}},
+  })
+  pw:newChild({
+    {'hero', {speed=800,hiSpeed=800, loSpeed=400}},
+    {'body',{kind='archer'}},
     {'pos', {x=100,y=100, r=0, ox=10, oy=5, sx=1.5,sy=1.5}},
     {'vel', {dx=0,dy=0}},
+    {'force', {fx=0,fy=0}},
     {'controller', {id="one"}},
-    {'hero', {speed=200}},
-    -- {'debug',{name="dirmag",value=0}}
-  })
-
-  estore:newEntity({
-    {'pos', {x=300,y=200, r=math.pi, ox=10, oy=5, sx=1.5,sy=1.5}},
-    {'vel', {dx=0,dy=0}},
-    {'controller', {id="two"}},
-    {'hero', {speed=200}},
-    -- {'debug',{name="dirmag",value=0}}
   })
 
 end
@@ -78,8 +90,8 @@ end
 -- UPDATE
 --
 local ControllerIds = { "one", "two" }
-
 local keyboardOpts = { devId="one" }
+
 Module.updateWorld = function(world,action)
   if action.type == 'tick' then
     world.input.dt = action.dt
@@ -132,6 +144,15 @@ Module.drawWorld = function(world)
   world.estore:walkEntities(hasComps('pos'), function(e)
     if e.hero then drawHero(e) end
     if e.arrow then drawArrow(e) end
+    if e.physicsObjects then
+      for _,obj in ipairs(e.physicsObjects) do
+        drawPhysicsObject(e,obj)
+      end
+    end
+  end)
+
+  world.estore:walkEntities(hasComps('physicsWorld'), function(e)
+    Physics.draw(e,world.estore,world.input,world.resources)
   end)
 end
 

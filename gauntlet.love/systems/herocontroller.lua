@@ -23,14 +23,14 @@ local function bowStateMachine(e,estore,input,res)
   local c = e.controller
 
   if hero.bow == "rest" then
-    hero.speed=200
+    hero.speed=hero.hiSpeed
     if e.controller.r2 == 1 then
       hero.bow = "drawn"
       hero.bowtimer = 0.5
     end
 
   elseif hero.bow == "drawn" then
-    hero.speed=100
+    hero.speed=hero.loSpeed
     hero.bowtimer = hero.bowtimer - input.dt
     if hero.bowtimer <= 0 then hero.bowtimer = 0 end
     if e.controller.r2 == 0 then
@@ -40,7 +40,7 @@ local function bowStateMachine(e,estore,input,res)
     end
 
   elseif hero.bow == "fired" then
-    hero.speed=200
+    hero.speed=hero.hiSpeed
     hero.bowtimer = hero.bowtimer - input.dt
     if hero.bowtimer <= 0 then
       hero.bow = "rest"
@@ -54,8 +54,13 @@ local heroControllerSystem = defineUpdateSystem({'hero','controller'}, function(
   local c = e.controller
 
   -- Set velocity based on left stick
-  e.vel.dx = c.leftx * e.hero.speed
-  e.vel.dy = c.lefty * e.hero.speed
+  -- e.vel.dx = c.leftx * e.hero.speed
+  -- e.vel.dy = c.lefty * e.hero.speed
+  e.force.fx = c.leftx * e.hero.speed
+  e.force.fy = c.lefty * e.hero.speed
+  if e.force.fx > 0 or e.force.fy > 0 then
+    print(tdebug(e.force))
+  end
 
   -- Set aim dir based on absolute dir of right stick
   local rx = c.rightx or 0
