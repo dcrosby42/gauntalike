@@ -73,10 +73,10 @@ function setupEstore(estore)
   pw:newChild({
     {'pos', {x=200,y=100}},
     {'vel', {dx=0,dy=50}},
-    {'body',{kind='testbox'}},
+    {'body',{kind='testbox',debugDraw=true}},
   })
   pw:newChild({
-    {'hero', {speed=800,hiSpeed=800, loSpeed=400}},
+    {'hero', {speed=400,hiSpeed=400, loSpeed=200}},
     {'body',{kind='archer'}},
     {'pos', {x=100,y=100, r=0, ox=10, oy=5, sx=1.5,sy=1.5}},
     {'vel', {dx=0,dy=0}},

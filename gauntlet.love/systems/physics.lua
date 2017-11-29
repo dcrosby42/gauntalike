@@ -140,11 +140,23 @@ local function getBodyOpts(body, e, res)
     }
   elseif body.kind == 'archer' then
     opts.body.angularDamping = 3
-    opts.body.linearDamping = 3
+    opts.body.linearDamping = 6
     opts.shape={
       type='rectangle',
-      width=100,
-      height=30,
+      x=-5,
+      y=5,
+      width=30,
+      height=20,
+    }
+  elseif body.kind == 'arrow' then
+    -- opts.body.angularDamping = 3
+    -- opts.body.linearDamping = 6
+    opts.shape={
+      type='rectangle',
+      -- x=-5,
+      -- y=5,
+      width=35,
+      height=2,
     }
   end
   return opts
@@ -206,15 +218,11 @@ end)
 Module.draw = function(physWorldE, estore,input,res)
   love.graphics.setColor(255,255,255)
   estore:walkEntity(physWorldE, hasComps('body'), function(e)
-    local obj = res.caches.physicsObjects[e.body.cid]
-    -- print(tdebug(obj))
-    --
-    --
-    for _,shape in ipairs(obj.shapes) do
-    --   -- print(tdebug(shape:getPoints()))
-    --   local pts =
-    --   -- print(tflatten(pts))
-      love.graphics.polygon("line", obj.body:getWorldPoints(shape:getPoints()))
+    if e.body.debugDraw then
+      local obj = res.caches.physicsObjects[e.body.cid]
+      for _,shape in ipairs(obj.shapes) do
+        love.graphics.polygon("line", obj.body:getWorldPoints(shape:getPoints()))
+      end
     end
   end)
 end

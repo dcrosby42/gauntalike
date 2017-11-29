@@ -7,15 +7,26 @@ local sqrt = math.sqrt
 local function fireArrow(e, estore,input,res)
   local r = e.pos.r
   local vel = 500 - (e.hero.bowtimer * 800)
+  -- local vel = 500
   local dx = vel * cos(r)
   local dy = vel * sin(r)
   local x = e.pos.x
   local y = e.pos.y
-  estore:newEntity({
-    {'pos', {x=x,y=y, r=r, ox=10, oy=5, sx=1.5,sy=1.5}},
-    {'vel', {dx=dx,dy=dy}},
-    {'arrow', {}},
-  })
+  estore:seekEntity(hasComps('physicsWorld'), function(pwEnt)
+    pwEnt:newChild({
+      {'pos', {x=x,y=y, r=r, ox=10, oy=5, sx=1.5,sy=1.5}},
+      {'vel', {dx=dx,dy=dy}},
+      {'arrow', {}},
+      {'body', {kind='arrow'}},
+    })
+  end)
+
+  -- estore:newEntity({
+  --   {'pos', {x=x,y=y, r=r, ox=10, oy=5, sx=1.5,sy=1.5}},
+  --   {'vel', {dx=dx,dy=dy}},
+  --   {'arrow', {}},
+  --   {'body', {kind='arrow'}},
+  -- })
 end
 
 local function bowStateMachine(e,estore,input,res)
@@ -54,12 +65,12 @@ local heroControllerSystem = defineUpdateSystem({'hero','controller'}, function(
   local c = e.controller
 
   -- Set velocity based on left stick
-  -- e.vel.dx = c.leftx * e.hero.speed
-  -- e.vel.dy = c.lefty * e.hero.speed
-  e.force.fx = c.leftx * e.hero.speed
-  e.force.fy = c.lefty * e.hero.speed
-  if e.force.fx > 0 or e.force.fy > 0 then
-    print(tdebug(e.force))
+  if e.force then
+    e.force.fx = c.leftx * e.hero.speed
+    e.force.fy = c.lefty * e.hero.speed
+  else
+    e.vel.dx = c.leftx * e.hero.speed
+    e.vel.dy = c.lefty * e.hero.speed
   end
 
   -- Set aim dir based on absolute dir of right stick
