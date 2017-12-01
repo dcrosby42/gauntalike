@@ -76,12 +76,20 @@ function setupEstore(estore)
     {'body',{kind='testbox',debugDraw=true}},
   })
   pw:newChild({
-    {'hero', {speed=400,hiSpeed=400, loSpeed=200}},
-    {'body',{kind='archer'}},
+    {'hero', {speed=300,hiSpeed=300, loSpeed=100}},
+    {'body',{kind='archer',group=-3,debugDraw=false}},
     {'pos', {x=100,y=100, r=0, ox=10, oy=5, sx=1.5,sy=1.5}},
     {'vel', {dx=0,dy=0}},
     {'force', {fx=0,fy=0}},
     {'controller', {id="one"}},
+  })
+  pw:newChild({
+    {'hero', {speed=400,hiSpeed=400, loSpeed=200}},
+    {'body',{kind='archer',group=-2,debugDraw=false}},
+    {'pos', {x=600,y=150, r=math.pi, ox=10, oy=5, sx=1.5,sy=1.5}},
+    {'vel', {dx=0,dy=0}},
+    {'force', {fx=0,fy=0}},
+    {'controller', {id="two"}},
   })
 
 end
@@ -90,7 +98,7 @@ end
 -- UPDATE
 --
 local ControllerIds = { "one", "two" }
-local keyboardOpts = { devId="one" }
+local keyboardOpts = { devId="two" }
 
 Module.updateWorld = function(world,action)
   if action.type == 'tick' then
@@ -141,6 +149,7 @@ local function drawArrow(e)
 end
 
 Module.drawWorld = function(world)
+  love.graphics.setBackgroundColor(0,0,0)
   world.estore:walkEntities(hasComps('pos'), function(e)
     if e.hero then drawHero(e) end
     if e.arrow then drawArrow(e) end

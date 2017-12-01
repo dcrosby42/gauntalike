@@ -1,3 +1,7 @@
+local debugOn = print
+local debugOff = function() end
+local debug = debugOn
+
 -- opts
 --   type | ...
 --   body
@@ -17,7 +21,6 @@
 --       sensor | true (false)
 --       userData | nil
 local function newPhysicsObject(physicsWorld,opts)
-  print("New physics object")
   local obj = {
     type=opts.type,
     body={},
@@ -69,6 +72,18 @@ local function newPhysicsObject(physicsWorld,opts)
     local fixture = love.physics.newFixture(obj.body, shape)
     if sh.sensor == true then
       fixture:setSensor(true)
+    end
+    if sh.filter then
+      local f = sh.filter
+      if f.cats then
+        fixture:setCategory(unpack(f.cats))
+      end
+      if f.mask then
+        fixture:setMask(unpack(f.mask))
+      end
+      if f.group then
+        fixture:setGroupIndex(f.group)
+      end
     end
     if sh.userData ~= nil then
       fixture:setUserData(sh.userData)
@@ -137,16 +152,23 @@ local function getBodyOpts(body, e, res)
       type='rectangle',
       width=100,
       height=100,
+      filter={
+        -- cats={1},
+      },
     }
   elseif body.kind == 'archer' then
     opts.body.angularDamping = 3
     opts.body.linearDamping = 6
     opts.shape={
       type='rectangle',
-      x=-5,
+      x=5,
       y=5,
-      width=30,
+      width=35,
       height=20,
+      filter={
+        -- cats={1},
+        -- mask={2},
+      },
     }
   elseif body.kind == 'arrow' then
     -- opts.body.angularDamping = 3
@@ -157,8 +179,13 @@ local function getBodyOpts(body, e, res)
       -- y=5,
       width=35,
       height=2,
+      filter={
+        -- cats={1},
+        -- mask={1},
+      },
     }
   end
+  opts.shape.filter.group = body.group
   return opts
 end
 
@@ -184,6 +211,7 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
     local obj = oc[id]
     if obj == nil then
       -- newly-added physics component -> create new obj in cache
+      debug("New physics body for cid="..e.body.cid.." kind="..e.body.kind)
       obj = newPhysicsObject(world, getBodyOpts(e.body, e, res))
       oc[id] = obj
     end
@@ -198,6 +226,7 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
     end
   end
   for _,id in ipairs(remIds) do
+    debug("Removing phys obj cid="..id)
     oc[id] = nil
   end
 

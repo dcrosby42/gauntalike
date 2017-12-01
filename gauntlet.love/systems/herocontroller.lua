@@ -17,7 +17,7 @@ local function fireArrow(e, estore,input,res)
       {'pos', {x=x,y=y, r=r, ox=10, oy=5, sx=1.5,sy=1.5}},
       {'vel', {dx=dx,dy=dy}},
       {'arrow', {}},
-      {'body', {kind='arrow'}},
+      {'body', {kind='arrow',group=e.body.group}},
     })
   end)
 

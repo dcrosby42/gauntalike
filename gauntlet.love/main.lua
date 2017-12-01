@@ -1,3 +1,5 @@
+-- require 'util.lovedebug'
+
 local crozeng = require 'crozeng.main'
 
 crozeng.module_name = 'modules/switcher'
