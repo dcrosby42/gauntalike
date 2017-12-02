@@ -1,6 +1,6 @@
-local debugOn = print
-local debugOff = function() end
-local debug = debugOn
+local debug = print
+local debug = function() end
+local logError = print
 
 -- opts
 --   type | ...
@@ -55,6 +55,8 @@ local function newPhysicsObject(physicsWorld,opts)
       sh.height = sh.height or 0
       shape = love.physics.newRectangleShape(sh.x,sh.y,sh.width,sh.height,0)
     elseif sh.type == 'circle' then
+      sh.x = sh.x or 0
+      sh.y = sh.y or 0
       sh.radius = sh.radius or 1
       shape = love.physics.newCircleShape(sh.x,sh.y, sh.radius)
     elseif sh.type == 'chain' then
@@ -70,6 +72,7 @@ local function newPhysicsObject(physicsWorld,opts)
     table.insert(obj.shapes, shape)
 
     local fixture = love.physics.newFixture(obj.body, shape)
+    fixture:setUserData(opts.userData)
     if sh.sensor == true then
       fixture:setSensor(true)
     end
@@ -131,7 +134,7 @@ local function updateBodyComponent(obj,body,e,estore,input,res)
 end
 
 local function newPhysicsWorld(comp)
-    print("Creating new physics world")
+  debug("Creating new physics world")
   local w = love.physics.newWorld(comp.gx, comp.gy, comp.allowSleep)
   return w
 end
@@ -139,6 +142,7 @@ end
 local function getBodyOpts(body, e, res)
   local opts = {
     kind=body.kind,
+    userData=body.cid,
     body={
       type="dynamic",
       x=0,
@@ -184,9 +188,50 @@ local function getBodyOpts(body, e, res)
         -- mask={1},
       },
     }
+
+  elseif body.kind == 'item' then
+    opts.body.angularDamping = 1
+    opts.body.linearDamping = 1
+    opts.shape={
+      type='circle',
+      radius=15,
+      sensor=true,
+      -- height=15,
+      filter={
+        -- cats={1},
+      },
+    }
   end
   opts.shape.filter.group = body.group
   return opts
+end
+
+local function getCollisionFuncs(collState)
+  local beginContact = function(a,b,coll)
+    table.insert(collState.begins, {a,b,coll})
+  end
+  local endContact = function(a,b,coll)
+    table.insert(collState.ends, {a,b,coll})
+  end
+  return beginContact, endContact
+end
+
+local function handleCollisions(physWorld, collState, estore, input, res)
+  for _,c in ipairs(collState.begins) do
+    local a,b,con = unpack(c)
+    local aComp, aEnt = estore:getCompAndEntityForCid(a:getUserData())
+    local bComp, bEnt = estore:getCompAndEntityForCid(b:getUserData())
+
+    if aEnt and bEnt then
+      aEnt:newComp('collision',{myCid=aComp.cid, theirCid=bComp.cid, theirEid=bEnt.eid})
+      bEnt:newComp('collision',{myCid=bComp.cid, theirCid=aComp.cid, theirEid=aEnt.eid})
+    else
+      logError("!! Unable to register collision between '".. a:getUserData() .."' and '".. b:getUserData() .."'")
+    end
+  end
+
+  collState.begins = {}
+  collState.ends = {}
 end
 
 local Module = {}
@@ -195,9 +240,16 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
   local world = physEnt.physicsWorld.world
   if world == 0 then
     world = newPhysicsWorld(physEnt.physicsWorld)
+    local collState = {begins={}, ends={}}
+    local bc,ec = getCollisionFuncs(collState)
+    world:setCallbacks(bc,ec)
     physEnt.physicsWorld.world = world
+    physEnt.physicsWorld.collisions = collState
   end
 
+  --
+  -- SYNC: Components->to->Physics Objects
+  --
   local oc = res.caches.physicsObjects
   if not oc then
     oc = {}
@@ -227,11 +279,26 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
   end
   for _,id in ipairs(remIds) do
     debug("Removing phys obj cid="..id)
-    oc[id] = nil
+    local obj = oc[id]
+    if obj then
+      obj.body:destroy()
+      oc[id] = nil
+    end
   end
 
+  --
+  -- Update the physics world
+  --
   world:update(input.dt)
 
+  --
+  -- Process Collisions
+  --
+  handleCollisions(world, physEnt.physicsWorld.collisions, estore, input, res)
+
+  --
+  -- SYNC: Physics Objects->to->Components
+  --
   estore:walkEntity(physEnt, hasComps('body'), function(e)
     local id = e.body.cid
     local obj = oc[id]
@@ -250,7 +317,13 @@ Module.draw = function(physWorldE, estore,input,res)
     if e.body.debugDraw then
       local obj = res.caches.physicsObjects[e.body.cid]
       for _,shape in ipairs(obj.shapes) do
-        love.graphics.polygon("line", obj.body:getWorldPoints(shape:getPoints()))
+        if shape:type() == "CircleShape" then
+          local x,y = obj.body:getWorldPoints(shape:getPoint())
+          local r = shape:getRadius()
+          love.graphics.circle("line", x,y,r)
+        else
+          love.graphics.polygon("line", obj.body:getWorldPoints(shape:getPoints()))
+        end
       end
     end
   end)

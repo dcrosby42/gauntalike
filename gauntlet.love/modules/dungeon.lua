@@ -19,11 +19,34 @@ local Physics = require 'systems.physics'
 local Joystick = require 'util.joystick'
 local KeyboardSimGamepad = require 'util.keyboardsimgamepad'
 
-local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,res)
-  e.pos.x = e.pos.x + (e.vel.dx * input.dt)
-  e.pos.y = e.pos.y + (e.vel.dy * input.dt)
-  if e.pos.x < -100 or e.pos.x > 1500 or e.pos.y < -100 or e.pos.y > 1500 then
-    estore:destroyEntity(e)
+-- local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,res)
+--   e.pos.x = e.pos.x + (e.vel.dx * input.dt)
+--   e.pos.y = e.pos.y + (e.vel.dy * input.dt)
+--   if e.pos.x < -100 or e.pos.x > 1500 or e.pos.y < -100 or e.pos.y > 1500 then
+--     estore:destroyEntity(e)
+--   end
+-- end)
+
+local collisionSystem = defineUpdateSystem({'collision'}, function(me,estore,input,res)
+  -- print(tostring(me.collision), tostring(#me.collisions))
+  -- me:removeComp(me.collision)
+  local cleanups={}
+  for _,coll in pairs(me.collisions) do
+    local them = estore:getEntity(coll.theirEid)
+    if me.hero and them.hero then
+      print("HERO FIGHT")
+    elseif me.hero and them.body.kind == "item" then
+      print("ITEM!")
+      estore:destroyEntity(them)
+    elseif me.body.kind=="arrow" and them.hero then
+      print("KILLED!")
+      estore:destroyEntity(them)
+      estore:destroyEntity(me)
+    end
+    table.insert(cleanups,coll)
+  end
+  for _,comp in pairs(cleanups) do
+    me:removeComp(comp)
   end
 end)
 
@@ -35,6 +58,7 @@ local RunSystems = iterateFuncs({
   controllerSystem,
   heroControllerSystem,
   Physics.update,
+  collisionSystem,
   -- scriptSystem,
   -- characterControllerSystem,
   -- gravitySystem,
@@ -74,6 +98,11 @@ function setupEstore(estore)
     {'pos', {x=200,y=100}},
     {'vel', {dx=0,dy=50}},
     {'body',{kind='testbox',debugDraw=true}},
+  })
+  pw:newChild({
+    {'pos', {x=400,y=100}},
+    {'vel', {dx=0,dy=0}},
+    {'body',{kind='item',debugDraw=true}},
   })
   pw:newChild({
     {'hero', {speed=300,hiSpeed=300, loSpeed=100}},

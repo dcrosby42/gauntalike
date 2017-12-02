@@ -32,3 +32,5 @@ Comp.define("arrow", {})
 Comp.define('physicsWorld', {'world',0, 'gx',0,'gy',0,'allowSleep',true})
 Comp.define('body', {'kind','', 'group',0,'debugDraw',false})
 Comp.define("force", {'fx',0,'fy',0})
+
+Comp.define("collision", {'myCid','','theirCid','','theirEid',''})

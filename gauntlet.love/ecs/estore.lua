@@ -246,6 +246,16 @@ function Estore:getComp(cid)
   return self.comps[cid]
 end
 
+function Estore:getCompAndEntityForCid(cid)
+  local comp = self.comps[cid]
+  if comp then
+    local ent = self.ents[comp.eid]
+    return comp,ent
+  else
+    return nil,nil
+  end
+end
+
 -- Iterate all Entities by walking the parent-child tree in preorder fashion.
 -- (Ie, match/process the given node, then the child nodes from first to last)
 -- IF a node IS matched AND the processing of that node returns false (explicitly), the children are NOT processed.
