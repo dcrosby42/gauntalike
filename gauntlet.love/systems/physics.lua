@@ -271,7 +271,7 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
 
 end)
 
-Module.draw = function(physWorldE, estore,input,res)
+Module.draw = defineDrawSystem({'physicsWorld'}, function(physWorldE,estore,res)
   love.graphics.setColor(255,255,255)
   estore:walkEntity(physWorldE, hasComps('body'), function(e)
     if e.body.debugDraw then
@@ -289,6 +289,6 @@ Module.draw = function(physWorldE, estore,input,res)
       end
     end
   end)
-end
+end)
 
 return Module

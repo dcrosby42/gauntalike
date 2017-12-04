@@ -1,10 +1,9 @@
 local Module = {}
 
-require 'crozeng.helpers'
-require 'ecs.ecshelpers'
-local Estore = require 'ecs.estore'
-local Comps = require 'comps'
-local BodyDefs = require 'modules.dungeon_bodydefs'
+local Base = require 'modules.base'
+
+local DungeonBodyDefs = require 'modules.dungeon.bodydefs'
+local DungeonDraw = require 'modules.dungeon.draw'
 -- local Resources = require 'modules.dungeon.resources'
 -- local timerSystem = require 'systems.timer'
 -- local scriptSystem = require 'systems.script'
@@ -17,8 +16,6 @@ local Physics = require 'systems.physics'
 -- local blockMapSystem = require 'systems.blockmap'
 -- local gravitySystem = require 'systems.gravity'
 
-local Joystick = require 'util.joystick'
-local KeyboardSimGamepad = require 'util.keyboardsimgamepad'
 
 -- local moverSystem = defineUpdateSystem({"pos","vel"}, function(e,estore,input,res)
 --   e.pos.x = e.pos.x + (e.vel.dx * input.dt)
@@ -73,7 +70,7 @@ local collisionSystem = defineUpdateSystem({'collision'}, function(me,estore,inp
 end)
 
 
-local RunSystems = iterateFuncs({
+local UpdateSystem = iterateFuncs({
   -- outputCleanupSystem,
   -- timerSystem,
   -- selfDestructSystem,
@@ -94,24 +91,10 @@ local RunSystems = iterateFuncs({
   -- effectsSystem,
 })
 
-local setupEstore
-Module.newWorld = function()
-  local world={}
-  world.input = { dt=0, events={} }
-  world.estore = Estore:new()
-  world.resources = {}
-  world.resources.caches = {}
-  world.resources.bodyDefs = BodyDefs
-  setupEstore(world.estore)
-  for cid,comp in pairs(world.estore.comps) do
-    print("component "..comp.eid.. "."..cid.." - "..comp.type)
-  end
+function setupResourcesAndEntities(opts, world)
+  world.resources.bodyDefs = DungeonBodyDefs
 
-
-  return world
-end
-
-function setupEstore(estore)
+  local estore = world.estore
 
   -- estore:newEntity({
   --   {'pos', {x=300,y=200, r=math.pi, ox=10, oy=5, sx=1.5,sy=1.5}},
@@ -182,75 +165,19 @@ function setupEstore(estore)
 
 end
 
---
--- UPDATE
---
-local ControllerIds = { "one", "two" }
-local keyboardOpts = { devId="two" }
 
-Module.updateWorld = function(world,action)
-  if action.type == 'tick' then
-    world.input.dt = action.dt
-    RunSystems(world.estore, world.input, world.resources)
-    world.input.events = {}
+Module.newWorld = Base.makeSetupFunc(setupResourcesAndEntities)
 
-  elseif action.type == 'joystick' then
-    Joystick.handleJoystick(action, ControllerIds, function(controllerId, input,action)
-      addInputEvent(world.input, {type='controller', id=controllerId, input=input, action=action})
-    end)
+Module.updateWorld = Base.makeUpdateFunc(UpdateSystem)
 
-  elseif action.type == 'keyboard' then
-    KeyboardSimGamepad.handleKeyboard(action, keyboardOpts, function(controllerId, input,action)
-      addInputEvent(world.input, {type='controller',id=controllerId, input=input, action=action})
-    end)
-
-  end
-
-  return world
-end
-
---
--- DRAW
---
-local BowArts = {
-  rest  ="  -}->",
-  drawn ="=--}>",
-  fired="     }",
-}
-
-local ArrowArts = {
-  default="=-->"
-}
-
-local function drawAscii(str, p, color)
-  love.graphics.setColor(unpack(color))
-  love.graphics.print(str, p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
-end
-
-local function drawHero(e)
-  local key = e.hero.bow
-  drawAscii(BowArts[key], e.pos, {255,255,255})
-end
-
-local function drawArrow(e)
-  drawAscii(ArrowArts.default, e.pos, {150,150,200})
-end
-
-Module.drawWorld = function(world)
-  love.graphics.setBackgroundColor(0,0,0)
-  world.estore:walkEntities(hasComps('pos'), function(e)
-    if e.hero then drawHero(e) end
-    if e.arrow then drawArrow(e) end
-    if e.physicsObjects then
-      for _,obj in ipairs(e.physicsObjects) do
-        drawPhysicsObject(e,obj)
-      end
-    end
-  end)
-
-  world.estore:walkEntities(hasComps('physicsWorld'), function(e)
-    Physics.draw(e,world.estore,world.input,world.resources)
-  end)
-end
+Module.drawWorld = Base.makeDrawFunc({
+  before=function(world)
+    love.graphics.setBackgroundColor(40,50,0)
+  end,
+  system=iterateFuncs({
+    DungeonDraw.system,
+    Physics.draw,
+  })
+})
 
 return Module

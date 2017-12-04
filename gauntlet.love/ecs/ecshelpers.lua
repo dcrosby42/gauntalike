@@ -63,17 +63,32 @@ function setParentEntity(estore, childE, parentE, order)
   estore:newComp(childE, 'parent', {parentEid=parentE.eid, order=order})
 end
 
-function defineUpdateSystem(matchSpec,fn)
+local function matchSpecToFn(matchSpec)
   local matchFn
   if type(matchSpec) == "function" then
     matchFn = matchSpec
   else
     matchFn = hasComps(unpack(matchSpec))
   end
+  return matchFn
+end
+
+function defineUpdateSystem(matchSpec,fn)
+  local matchFn = matchSpecToFn(matchSpec)
   return function(estore, input, res)
     estore:walkEntities(
       matchFn,
       function(e) fn(e, estore, input, res) end
+    )
+  end
+end
+
+function defineDrawSystem(matchSpec,fn)
+  local matchFn = matchSpecToFn(matchSpec)
+  return function(estore, res)
+    estore:walkEntities(
+      matchFn,
+      function(e) fn(e, estore, res) end
     )
   end
 end
