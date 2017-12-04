@@ -188,9 +188,11 @@ function Estore:detachComp(e,comp)
     local plural = e[keyp]
 
     -- Remove comp from the plural ref table:
-    for k,c in pairs(plural) do
-      if c.cid == comp.cid then
-        plural[k] = nil
+    if plural then
+      for k,c in pairs(plural) do
+        if c.cid == comp.cid then
+          plural[k] = nil
+        end
       end
     end
 

@@ -30,6 +30,7 @@ Comp.define("hero", {'id','','bow','rest', 'bowtimer',0, 'speed',200,'hiSpeed',2
 Comp.define("arrow", {})
 Comp.define("door", {'x',0,'y',0,'w',0,'h',0})
 Comp.define("wall", {'x',0,'y',0,'w',0,'h',0})
+Comp.define("roomWalls", {})
 Comp.define("item", {'kind',''})
 
 Comp.define('physicsWorld', {'world',0, 'gx',0,'gy',0,'allowSleep',true})

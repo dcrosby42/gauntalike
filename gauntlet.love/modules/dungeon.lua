@@ -128,23 +128,29 @@ function setupEstore(estore)
     {'vel', {dx=0,dy=50}},
   })
   pw:newChild({
-    {'door', {x=0,y=0,w=20,h=80}},
+    {'door', {x=0,y=0,w=20,h=100}},
     {'body',{kind='door',debugDraw=true}},
-    {'pos', {x=1024-10,y=768/2-40}},
+    {'pos', {x=1024-10,y=768/2-5}},
     {'vel', {dx=0,dy=0}},
   })
   pw:newChild({
-    {'wall', {x=0,y=0,w=10,h=600}},
-    {'body',{kind='wall',debugDraw=true}},
-    {'pos', {x=1024-15,y=0}},
+    {'roomWalls', {}},
+    {'body',{kind='roomWalls',debugDraw=true}},
+    {'pos', {x=1024/2,y=768/2}},
     {'vel', {dx=0,dy=0}},
   })
-  pw:newChild({
-    {'wall', {x=0,y=0,w=10,h=600}},
-    {'body',{kind='wall',debugDraw=true}},
-    {'pos', {x=1024-15,y=688}},
-    {'vel', {dx=0,dy=0}},
-  })
+  -- pw:newChild({
+  --   {'wall', {x=0,y=0,w=10,h=600}},
+  --   {'body',{kind='wall',debugDraw=true}},
+  --   {'pos', {x=1024-15,y=0}},
+  --   {'vel', {dx=0,dy=0}},
+  -- })
+  -- pw:newChild({
+  --   {'wall', {x=0,y=0,w=10,h=600}},
+  --   {'body',{kind='wall',debugDraw=true}},
+  --   {'pos', {x=1024-15,y=688}},
+  --   {'vel', {dx=0,dy=0}},
+  -- })
   for _,coords in ipairs({
     {400,400},
     -- {450,400},

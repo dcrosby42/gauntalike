@@ -281,6 +281,8 @@ Module.draw = function(physWorldE, estore,input,res)
           local x,y = obj.body:getWorldPoints(shape:getPoint())
           local r = shape:getRadius()
           love.graphics.circle("line", x,y,r)
+        elseif shape:type() == "ChainShape" then
+          love.graphics.line(obj.body:getWorldPoints(shape:getPoints()))
         else
           love.graphics.polygon("line", obj.body:getWorldPoints(shape:getPoints()))
         end
