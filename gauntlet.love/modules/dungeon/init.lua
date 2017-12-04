@@ -1,18 +1,21 @@
 local Module = {}
 
 local Base = require 'modules.base'
-
 local DungeonBodyDefs = require 'modules.dungeon.bodydefs'
-local DungeonDraw = require 'modules.dungeon.draw'
-local Physics = require 'systems.physics'
+
+-- update systems:
+local physicsSystem = require 'systems.physics'
 local controllerSystem = require 'systems.controller'
 local heroControllerSystem = require 'systems.herocontroller'
 local collisionSystem = require 'systems.collision'
+-- drawing systems:
+local drawPhysics = require 'systems.physicsdraw'
+local drawDungeon = require 'modules.dungeon.drawdungeonsystem'
 
 local UpdateSystem = iterateFuncs({
   controllerSystem,
   heroControllerSystem,
-  Physics.update,
+  physicsSystem,
   collisionSystem,
 })
 
@@ -89,8 +92,8 @@ Module.drawWorld = Base.makeDrawFunc({
     love.graphics.setBackgroundColor(40,50,0)
   end,
   system=iterateFuncs({
-    DungeonDraw.system,
-    Physics.draw,
+    drawDungeon,
+    drawPhysics,
   })
 })
 

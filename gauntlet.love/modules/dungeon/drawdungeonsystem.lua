@@ -1,3 +1,4 @@
+require 'ecs.ecshelpers'
 
 local BowArts = {
   rest  ="  -}->",
@@ -25,7 +26,7 @@ end
 
 local Module = {}
 
-Module.system = defineDrawSystem({'pos'}, function(e,estore,res)
+local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
   if e.hero then drawHero(e) end
   if e.arrow then drawArrow(e) end
   if e.physicsObjects then
@@ -35,21 +36,4 @@ Module.system = defineDrawSystem({'pos'}, function(e,estore,res)
   end
 end)
 
--- Module.drawWorld = function(world)
---   love.graphics.setBackgroundColor(0,0,0)
---   world.estore:walkEntities(hasComps('pos'), function(e)
---     if e.hero then drawHero(e) end
---     if e.arrow then drawArrow(e) end
---     if e.physicsObjects then
---       for _,obj in ipairs(e.physicsObjects) do
---         drawPhysicsObject(e,obj)
---       end
---     end
---   end)
---
---   world.estore:walkEntities(hasComps('physicsWorld'), function(e)
---     Physics.draw(e,world.estore,world.input,world.resources)
---   end)
--- end
-
-return Module
+return drawDungeon
