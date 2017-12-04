@@ -83,6 +83,19 @@ function tcopydeep(orig)
   return copy
 end
 
+function tkeys(t)
+  local keyset={}
+  local n=0
+  for k,v in pairs(t) do
+    n=n+1
+    keyset[n]=k
+  end
+  return keyset
+end
+function numkeys(t)
+  return #tkeys(t)
+end
+
 function lcopy(src)
   local c = {}
   for i=1,#src do

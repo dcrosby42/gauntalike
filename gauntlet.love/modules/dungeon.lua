@@ -4,6 +4,7 @@ require 'crozeng.helpers'
 require 'ecs.ecshelpers'
 local Estore = require 'ecs.estore'
 local Comps = require 'comps'
+local BodyDefs = require 'modules.dungeon_bodydefs'
 -- local Resources = require 'modules.dungeon.resources'
 -- local timerSystem = require 'systems.timer'
 -- local scriptSystem = require 'systems.script'
@@ -31,21 +32,42 @@ local collisionSystem = defineUpdateSystem({'collision'}, function(me,estore,inp
   -- print(tostring(me.collision), tostring(#me.collisions))
   -- me:removeComp(me.collision)
   local cleanups={}
+  -- print("collisionSystem: me.eid="..me.eid.." has "..numkeys(me.collisions).." collisions:")
   for _,coll in pairs(me.collisions) do
+    -- print("  collision comp: "..Comp.debugString(coll))
     local them = estore:getEntity(coll.theirEid)
+    -- print("  them.eid="..them.eid)
     if me.hero and them.hero then
-      print("HERO FIGHT")
-    elseif me.hero and them.body.kind == "item" then
-      print("ITEM!")
+      -- print("  HERO FIGHT")
+
+    elseif me.hero and them.item then
+      local i = them.item
+      -- print("  ITEM! got a ".. i.kind.." destroying item="..them.eid)
+      if i.kind == 'key' then
+        me.hero.numKeys = me.hero.numKeys + 1
+      end
       estore:destroyEntity(them)
-    elseif me.body.kind=="arrow" and them.hero then
-      print("KILLED!")
+
+    elseif me.hero and them.arrow then
+      -- print("  I AM KILLED! destroying me="..me.eid.." and arrow="..them.eid)
       estore:destroyEntity(them)
       estore:destroyEntity(me)
+
+    elseif me.hero and them.door then
+      if me.hero.numKeys > 0 then
+        me.hero.numKeys = me.hero.numKeys - 1
+        -- print("  Opening door, destroying door="..them.eid)
+        estore:destroyEntity(them)
+      else
+        -- print("  This door requires a key!")
+      end
+    else
+      -- print("  No action to take.")
     end
     table.insert(cleanups,coll)
   end
   for _,comp in pairs(cleanups) do
+    -- print("  Removing collision comp "..Comp.debugString(comp))
     me:removeComp(comp)
   end
 end)
@@ -79,7 +101,13 @@ Module.newWorld = function()
   world.estore = Estore:new()
   world.resources = {}
   world.resources.caches = {}
+  world.resources.bodyDefs = BodyDefs
   setupEstore(world.estore)
+  for cid,comp in pairs(world.estore.comps) do
+    print("component "..comp.eid.. "."..cid.." - "..comp.type)
+  end
+
+
   return world
 end
 
@@ -95,15 +123,40 @@ function setupEstore(estore)
     {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
   })
   pw:newChild({
+    {'body',{kind='testbox',debugDraw=true}},
     {'pos', {x=200,y=100}},
     {'vel', {dx=0,dy=50}},
-    {'body',{kind='testbox',debugDraw=true}},
   })
   pw:newChild({
-    {'pos', {x=400,y=100}},
+    {'door', {x=0,y=0,w=20,h=80}},
+    {'body',{kind='door',debugDraw=true}},
+    {'pos', {x=1024-10,y=768/2-40}},
     {'vel', {dx=0,dy=0}},
-    {'body',{kind='item',debugDraw=true}},
   })
+  pw:newChild({
+    {'wall', {x=0,y=0,w=10,h=600}},
+    {'body',{kind='wall',debugDraw=true}},
+    {'pos', {x=1024-15,y=0}},
+    {'vel', {dx=0,dy=0}},
+  })
+  pw:newChild({
+    {'wall', {x=0,y=0,w=10,h=600}},
+    {'body',{kind='wall',debugDraw=true}},
+    {'pos', {x=1024-15,y=688}},
+    {'vel', {dx=0,dy=0}},
+  })
+  for _,coords in ipairs({
+    {400,400},
+    -- {450,400},
+  }) do
+    local x,y = unpack(coords)
+    pw:newChild({
+      {'item',{kind='key'}},
+      {'body',{kind='item',debugDraw=true}},
+      {'pos', {x=x,y=y}},
+      {'vel', {dx=0,dy=0}},
+    })
+  end
   pw:newChild({
     {'hero', {speed=300,hiSpeed=300, loSpeed=100}},
     {'body',{kind='archer',group=-3,debugDraw=false}},

@@ -1,4 +1,6 @@
-local debug = print
+local Comps = require 'comps'
+
+-- local debug = print
 local debug = function() end
 local logError = print
 
@@ -68,6 +70,8 @@ local function newPhysicsObject(physicsWorld,opts)
     elseif sh.type == 'polygon' then
       sh.pts = sh.pts or {}
       shape = love.physics.newPolygonShape(sh.pts)
+    else
+      error("Cannot build a phyics shape for sh.type="..tostring(sh.type).." -- "..tdebug(opts))
     end
     table.insert(obj.shapes, shape)
 
@@ -139,99 +143,55 @@ local function newPhysicsWorld(comp)
   return w
 end
 
-local function getBodyOpts(body, e, res)
-  local opts = {
-    kind=body.kind,
-    userData=body.cid,
-    body={
-      type="dynamic",
-      x=0,
-      y=0,
-    },
-  }
-  if body.kind == 'testbox' then
-    opts.body.angularDamping = 1
-    opts.body.linearDamping = 1
-    opts.shape={
-      type='rectangle',
-      width=100,
-      height=100,
-      filter={
-        -- cats={1},
-      },
-    }
-  elseif body.kind == 'archer' then
-    opts.body.angularDamping = 3
-    opts.body.linearDamping = 6
-    opts.shape={
-      type='rectangle',
-      x=5,
-      y=5,
-      width=35,
-      height=20,
-      filter={
-        -- cats={1},
-        -- mask={2},
-      },
-    }
-  elseif body.kind == 'arrow' then
-    -- opts.body.angularDamping = 3
-    -- opts.body.linearDamping = 6
-    opts.shape={
-      type='rectangle',
-      -- x=-5,
-      -- y=5,
-      width=35,
-      height=2,
-      filter={
-        -- cats={1},
-        -- mask={1},
-      },
-    }
-
-  elseif body.kind == 'item' then
-    opts.body.angularDamping = 1
-    opts.body.linearDamping = 1
-    opts.shape={
-      type='circle',
-      radius=15,
-      sensor=true,
-      -- height=15,
-      filter={
-        -- cats={1},
-      },
-    }
-  end
-  opts.shape.filter.group = body.group
-  return opts
-end
 
 local function getCollisionFuncs(collState)
-  local beginContact = function(a,b,coll)
-    table.insert(collState.begins, {a,b,coll})
+  local beginContact = function(a,b,contact)
+    debug("beginContact a="..a:getUserData().." b="..b:getUserData())
+    table.insert(collState.begins, {a,b,contact})
   end
-  local endContact = function(a,b,coll)
-    table.insert(collState.ends, {a,b,coll})
+  local endContact = function(a,b,contact)
+    debug("endContact a="..a:getUserData().." b="..b:getUserData())
+    table.insert(collState.ends, {a,b,contact})
+    contact = nil
+    collectgarbage()
   end
   return beginContact, endContact
 end
 
-local function handleCollisions(physWorld, collState, estore, input, res)
-  for _,c in ipairs(collState.begins) do
-    local a,b,con = unpack(c)
-    local aComp, aEnt = estore:getCompAndEntityForCid(a:getUserData())
-    local bComp, bEnt = estore:getCompAndEntityForCid(b:getUserData())
+local function addCollision(hitEnt, hitComp, otherEnt, otherComp)
+  local comp = hitEnt:newComp('collision',{
+    myCid=hitComp.cid,
+    theirCid=otherComp.cid,
+    theirEid=otherComp.eid,
+  })
+  debug("  adding collision comp: hitEnt="..hitEnt.eid.." hitComp="..hitComp.cid.." otherEnt="..otherEnt.eid.." otherComp="..otherComp.cid.." --> "..Comp.debugString(comp))
+end
 
-    if aEnt and bEnt then
-      aEnt:newComp('collision',{myCid=aComp.cid, theirCid=bComp.cid, theirEid=bEnt.eid})
-      bEnt:newComp('collision',{myCid=bComp.cid, theirCid=aComp.cid, theirEid=aEnt.eid})
-    else
-      logError("!! Unable to register collision between '".. a:getUserData() .."' and '".. b:getUserData() .."'")
+local function handleCollisions(physWorld, collState, estore, input, res)
+  if #collState.begins > 0 then
+    debug("handleCollisions: num begins:"..#collState.begins)
+    for _,c in ipairs(collState.begins) do
+      local a,b,con = unpack(c)
+      local aComp, aEnt = estore:getCompAndEntityForCid(a:getUserData())
+      local bComp, bEnt = estore:getCompAndEntityForCid(b:getUserData())
+      -- debug("  aComp[eid="..aComp.eid.." cid="..aComp.cid.."] aEnt.eid="..aEnt.eid)
+      -- debug("  bComp[eid="..bComp.eid.." cid="..bComp.cid.."] bEnt.eid="..bEnt.eid)
+      if aEnt and bEnt then
+        addCollision(aEnt, aComp, bEnt, bComp)
+        addCollision(bEnt, bComp, aEnt, aComp)
+        -- aEnt:newComp('collision',{myCid=aComp.cid, theirCid=bComp.cid, theirEid=bEnt.eid})
+        -- bEnt:newComp('collision',{myCid=bComp.cid, theirCid=aComp.cid, theirEid=aEnt.eid})
+      else
+        logError("!! Unable to register collision between '".. a:getUserData() .."' and '".. b:getUserData() .."'")
+      end
     end
+
+    collState.begins = {}
   end
 
-  collState.begins = {}
-  collState.ends = {}
+  if #collState.ends > 0 then
+    collState.ends = {}
+  end
 end
 
 local Module = {}
@@ -264,7 +224,7 @@ Module.update = defineUpdateSystem({'physicsWorld'},function(physEnt,estore,inpu
     if obj == nil then
       -- newly-added physics component -> create new obj in cache
       debug("New physics body for cid="..e.body.cid.." kind="..e.body.kind)
-      obj = newPhysicsObject(world, getBodyOpts(e.body, e, res))
+      obj = newPhysicsObject(world, res.bodyDefs.getBodyOpts(e.body, e, res))
       oc[id] = obj
     end
     updateBodyObject(obj,e.body,e,estore,input,res)

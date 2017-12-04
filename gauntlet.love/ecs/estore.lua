@@ -225,6 +225,10 @@ end
 -- Remove the comp from its entity and the estore.
 -- The comp will be removed from the comps cache and released back to its object pool.
 function Estore:removeComp(comp)
+  if comp.eid == nil or comp.eid == '' then
+    print("!! Estore:removeComp BAD EID comp="..Comp.debugString(comp))
+    return
+  end
   self:detachComp(self.ents[comp.eid], comp)
 
   self.comps[comp.cid] = nil -- uncache
