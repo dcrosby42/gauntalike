@@ -19,7 +19,6 @@ Module.makeSetupFunc = function(postInit)
         events={}
       },
       resources={
-        caches={},
       },
     }
 
