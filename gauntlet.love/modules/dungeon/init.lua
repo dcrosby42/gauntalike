@@ -12,6 +12,8 @@ local collisionSystem = require 'systems.collision'
 local drawPhysics = require 'systems.physicsdraw'
 local drawDungeon = require 'modules.dungeon.drawdungeonsystem'
 
+love.physics.setMeter(64) --the height of a meter our worlds will be 64px
+
 local UpdateSystem = iterateFuncs({
   controllerSystem,
   heroControllerSystem,
