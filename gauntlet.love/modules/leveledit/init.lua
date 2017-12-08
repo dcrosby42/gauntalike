@@ -1,4 +1,4 @@
-local ZoomUi = require 'modules.zoomui'
+local ZoomUI = require 'modules.zoomui'
 
 local function addPoint(shape,x,y)
   table.insert(shape.pts, x)
@@ -7,7 +7,13 @@ end
 
 local function handleMouse(world,action)
   if action.state == "pressed" then
-    addPoint(world.shape,action.x,action.y)
+    local x,y = ZoomUI.screenToUI(world.ui, action.x, action.y)
+    -- local x = action.x / world.ui.zoom + world.ui.loc[1]
+    -- local y = action.y / world.ui.zoom + world.ui.loc[2]
+    print(x,y)
+
+    -- world.ui, action.x, action.y
+    addPoint(world.shape,x,y)
   end
   -- print(tflatten(action))
 end
@@ -18,7 +24,7 @@ end
 local function newWorld()
   local world ={
     shape={pts={}},
-    ui=ZoomUi.newWorld(),
+    ui=ZoomUI.newWorld(),
   }
   world.ui.flags.drawGrid = true
   return world
@@ -28,15 +34,24 @@ end
 -- UPDATE
 --
 local function updateWorld(world,action)
-  ZoomUi.updateWorld(world.ui, action)
+  world.ui, handled = ZoomUI.updateWorld(world.ui, action)
+  if handled then return world,nil end
 
-  -- if action.type == 'tick' then
-  --   --
-  -- elseif action.type == 'mouse' then
-  --   handleMouse(world,action)
-  -- end
+  if action.type == 'tick' then
+    --
+  elseif action.type == 'mouse' then
+    handleMouse(world,action)
+  end
 
   return world, nil
+end
+
+local function mapPts(list,fn)
+  local res = {}
+  for i=1,#list-1,2 do
+    res[i],res[i+1] = fn(list[i],list[i+1])
+  end
+  return res
 end
 
 --
@@ -46,11 +61,21 @@ local function drawWorld(world)
   love.graphics.setBackgroundColor(0,0,0)
   love.graphics.setColor(255,255,255)
 
+  local ui = world.ui
+
+  -- love.graphics.push()
+  -- love.graphics.translate(-ui.loc[1]*100, -ui.loc[2]*100)
+
   if #world.shape.pts > 2 then
-    love.graphics.line(unpack(world.shape.pts))
+    local pts = mapPts(world.shape.pts, function(x,y)
+      return ZoomUI.uiToScreen(world.ui, x,y)
+    end)
+    love.graphics.line(unpack(pts))
   end
 
-  ZoomUi.drawWorld(world.ui)
+  -- love.graphics.pop()
+
+  ZoomUI.drawWorld(world.ui)
 end
 
 return {
