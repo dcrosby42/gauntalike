@@ -1,9 +1,13 @@
 local Module = {}
 
-Module.newWorld = function()
+local MIN_ZOOM=1
+local MAX_ZOOM=256
+
+Module.newWorld = function(opts)
+  opts = opts or {}
   local model={
-    loc={-2,-2},
-    zoom=100,
+    loc= opts.loc or {0,0},
+    zoom=opts.zoom or 1,
     pixw=love.graphics.getWidth(),
     pixh=love.graphics.getHeight(),
     mouse={},
@@ -57,6 +61,7 @@ local function handleMouse(model,action)
     model.mouse.scale_zoom=nil
     model.mouse.scale_pt=nil
     model.mouse.scale_pt_off=nil
+    print("zoomui.handleMouse: zoom="..model.zoom)
 
   elseif action.state == "moved" then
 
@@ -70,7 +75,7 @@ local function handleMouse(model,action)
       local ay = action.y - model.mouse.scale_pt[2]
       local dist = math.sqrt(ax*ax, ay*ay)
       if ax < 0 then dist = -dist end
-      model.zoom = math.clamp(model.mouse.scale_zoom + dist, 1, 10000)
+      model.zoom = math.clamp(model.mouse.scale_zoom + dist, MIN_ZOOM, MAX_ZOOM)
       -- adjust viewport loc to stay centered
       model.loc[1] = model.mouse.scale_center[1] - (model.pixw/2/model.zoom)
       model.loc[2] = model.mouse.scale_center[2] - (model.pixh/2/model.zoom)
@@ -118,30 +123,57 @@ Module.trans = uiTrans
 Module.uiToScreen = uiToScreen
 Module.screenToUI = screenToUI
 
-local function drawGridLines(ui)
+local function OLD_drawGridLines(ui)
   local left = ui.loc[1]
   local right = left + ui.pixw/ui.zoom
   local top = ui.loc[2]
   local bottom = top + ui.pixh/ui.zoom
+
+  -- draw vertical lines
   local sx = math.round(left,0)
   local ex = math.round(right,0)
-  -- local pry = 0
   for i=sx,ex,1 do
     local a = uiTrans(ui, {i, top})
     local b = uiTrans(ui, {i, bottom})
     love.graphics.print(""..i,a[1],0)
-    -- love.graphics.print(""..a[1].." "..a[2].." "..b[1].." "..b[2],0,pry)
-    -- pry = pry + 12
     love.graphics.line(a[1],a[2],b[1],b[2])
   end
+
+  -- draw h lines
   local sy = math.round(top,0)
   local ey = math.round(bottom,0)
   for j=sy,ey,1 do
     local a = uiTrans(ui, {left,j})
     local b = uiTrans(ui, {right, j})
     love.graphics.print(""..j,0,a[2])
-    -- love.graphics.print(""..a[1].." "..a[2].." "..b[1].." "..b[2],0,pry)
-    -- pry = pry + 12
+    love.graphics.line(a[1],a[2],b[1],b[2])
+  end
+end
+
+local function drawGridLines(ui)
+  local left = ui.loc[1]
+  local right = left + ui.pixw/ui.zoom
+  local top = ui.loc[2]
+  local bottom = top + ui.pixh/ui.zoom
+
+  local gf = 64
+  -- draw vertical lines
+  local sx = gf*math.ceil(left/gf,0)
+  local ex = gf*math.floor(right/gf,0)
+  for i=sx,ex,gf do
+    local a = uiTrans(ui, {i, top})
+    local b = uiTrans(ui, {i, bottom})
+    love.graphics.print(""..i,a[1],0)
+    love.graphics.line(a[1],a[2],b[1],b[2])
+  end
+
+  -- draw h lines
+  local sy = gf*math.ceil(top/gf,0)
+  local ey = gf*math.floor(bottom/gf,0)
+  for j=sy,ey,gf do
+    local a = uiTrans(ui, {left,j})
+    local b = uiTrans(ui, {right, j})
+    love.graphics.print(""..j,0,a[2])
     love.graphics.line(a[1],a[2],b[1],b[2])
   end
 end

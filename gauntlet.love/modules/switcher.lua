@@ -16,7 +16,7 @@ local function newWorld(opts)
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "leveledit"
+  model.current = opts.current or "dungeon"
   return model
 end
 
