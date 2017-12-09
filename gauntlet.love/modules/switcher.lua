@@ -1,6 +1,7 @@
-local Dungeon = require 'modules/dungeon'
+-- local Dungeon = require 'modules/dungeon'
 -- local Physbox = require 'modules/physbox'
 local LevelEdit = require 'modules/leveledit'
+local GameRoot = require 'modules/gameroot'
 
 local function newModuleSub(module,key)
   local state = module.newWorld()
@@ -11,12 +12,13 @@ local function newWorld(opts)
   opts = opts or {}
   local model ={
     subs={
-      dungeon=newModuleSub(Dungeon,"f1"),
-      leveledit=newModuleSub(LevelEdit,"f2"),
+      gameroot=newModuleSub(GameRoot,"f1"),
+      -- dungeon=newModuleSub(Dungeon,"f2"),
+      leveledit=newModuleSub(LevelEdit,"f3"),
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "dungeon"
+  model.current = opts.current or "gameroot"
   return model
 end
 

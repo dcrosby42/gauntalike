@@ -34,4 +34,8 @@ Module.handleKeyboard = function(action, opts, callback)
   end
 end
 
+Module.reset = function()
+  State = {}
+end
+
 return Module

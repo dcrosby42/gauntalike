@@ -23,30 +23,28 @@ local UpdateSystem = iterateFuncs({
 })
 
 
-function level1()
+local function level1()
   return {
     name="Level 1",
     players={
-      one={
-        loc={100,100},
-        r=0,
-      },
+      -- one={
+      --   loc={100,100},
+      --   r=0,
+      -- },
       two={
-        loc={600,150},
+        loc={700,150},
         r=math.pi,
       },
     },
     items={
-      [1]={
-        kind='key',
-        loc={200,100},
-      },
+      -- [1]={ kind='key', loc={200,100}, },
+      [2]={ kind='key', loc={300,200}, },
     },
   }
 end
 
 
-function setupResourcesAndEntities(opts, world)
+local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
   world.resources.bodyDefs = DungeonBodyDefs
 
@@ -56,7 +54,6 @@ function setupResourcesAndEntities(opts, world)
     {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
   })
 
-  -- initSandbox(estore,pw)
   Level.addLevel(estore, level1())
 end
 
