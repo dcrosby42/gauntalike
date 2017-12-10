@@ -1,6 +1,7 @@
 local Module = {}
 
 local State = {}
+local Pressed = {}
 
 local Mapping = {
   w={'lefty',-1},
@@ -18,13 +19,28 @@ local Mapping = {
 
 Module.handleKeyboard = function(action, opts, callback)
   local controllerId = opts.devId or "FIXME"
-  local change = false
 
-  local m = Mapping[action.key]
+  -- Protect from out-of-sequence arrivals, sych as a key release event arriving before a press (eg, due to mode switching or something)
+  local key = action.key
+  local keyState = action.state
+  if keyState == 'pressed' then
+    if Pressed[key] then
+      return
+    end
+    Pressed[key] = true
+  elseif keyState == 'released' then
+    if not Pressed[key] then
+      return
+    end
+    Pressed[key] = false
+  end
+
+
+  local m = Mapping[key]
   if m then
     local axis = m[1]
     local changeVal = m[2]
-    if action.state == 'released' then
+    if keyState == 'released' then
       changeVal = -changeVal
     end
     local s = State[axis] or 0
@@ -36,6 +52,7 @@ end
 
 Module.reset = function()
   State = {}
+  Pressed = {}
 end
 
 return Module
