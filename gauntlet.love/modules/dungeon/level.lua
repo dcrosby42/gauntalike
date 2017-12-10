@@ -37,6 +37,7 @@ local function addPlayers(par,players)
   for plId,pl in pairs(players) do
     par:newChild({
       {'hero', {speed=400,hiSpeed=400, loSpeed=200}},
+      {'name', {name=pl.name or "Hero"}},
       {'body',{kind='archer',group=-groupCounter, debugDraw=false}},
       {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=10, oy=5, sx=1.5,sy=1.5}},
       {'vel', {dx=0,dy=0}},

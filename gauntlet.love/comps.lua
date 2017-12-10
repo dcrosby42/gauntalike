@@ -38,3 +38,4 @@ Comp.define('body', {'kind','', 'group',0,'debugDraw',false})
 Comp.define("force", {'fx',0,'fy',0})
 
 Comp.define("collision", {'myCid','','theirCid','','theirEid',''})
+Comp.define("scoreboard", {})

@@ -8,6 +8,7 @@ local physicsSystem = require 'systems.physics'
 local controllerSystem = require 'systems.controller'
 local heroControllerSystem = require 'systems.herocontroller'
 local collisionSystem = require 'systems.collision'
+local refereeSystem = require 'systems.referee'
 -- drawing systems:
 local drawPhysics = require 'systems.physicsdraw'
 local drawDungeon = require 'modules.dungeon.drawdungeonsystem'
@@ -20,6 +21,8 @@ local UpdateSystem = iterateFuncs({
   heroControllerSystem,
   physicsSystem,
   collisionSystem,
+
+  refereeSystem,
 })
 
 
@@ -32,6 +35,7 @@ local function level1()
       --   r=0,
       -- },
       two={
+        name="Hanzo",
         loc={700,150},
         r=math.pi,
       },
@@ -50,8 +54,11 @@ local function setupResourcesAndEntities(opts, world)
 
   local estore = world.estore
 
-  local pw = estore:newEntity({
+  estore:newEntity({
     {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
+  })
+  estore:newEntity({
+    {'scoreboard',{}},
   })
 
   Level.addLevel(estore, level1())

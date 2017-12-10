@@ -50,9 +50,10 @@ Module.handleKeyboard = function(action, opts, callback)
   end
 end
 
-Module.reset = function()
-  State = {}
-  Pressed = {}
-end
+-- Don't need this yet
+-- Module.reset = function()
+--   State = {}
+--   Pressed = {}
+-- end
 
 return Module

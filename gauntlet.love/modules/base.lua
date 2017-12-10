@@ -16,38 +16,15 @@ Module.makeSetupFunc = function(postInit)
       estore=Estore:new(),
       input={
         dt=0,
-        events={}
+        events={},
+        exports={},
       },
-      resources={
-      },
+      resources={},
+      exports={},
     }
 
     postInit(opts,world)
 
-    return world
-  end
-end
-
-local function makeUpdateFunc(updateSystem)
-  local ControllerIds = { "one", "two" }
-  local keyboardOpts = { devId="two" }
-
-  return function(world,action)
-    if action.type == 'tick' then
-      world.input.dt = action.dt
-      updateSystem(world.estore, world.input, world.resources)
-      world.input.events = {}
-
-    elseif action.type == 'joystick' then
-      Joystick.handleJoystick(action, ControllerIds, function(controllerId, input,action)
-        addInputEvent(world.input, {type='controller', id=controllerId, input=input, action=action})
-      end)
-
-    elseif action.type == 'keyboard' then
-      KeyboardSimGamepad.handleKeyboard(action, keyboardOpts, function(controllerId, input,action)
-        addInputEvent(world.input, {type='controller',id=controllerId, input=input, action=action})
-      end)
-    end
     return world
   end
 end
@@ -57,10 +34,13 @@ Module.makeUpdateFunc = function(updateSystem)
   local keyboardOpts = { devId="two" }
 
   return function(world,action)
+    local exports = nil
     if action.type == 'tick' then
       world.input.dt = action.dt
       updateSystem(world.estore, world.input, world.resources)
+      exports = world.input.exports
       world.input.events = {}
+      world.input.exports = {}
 
     elseif action.type == 'joystick' then
       Joystick.handleJoystick(action, ControllerIds, function(controllerId, input,action)
@@ -72,7 +52,7 @@ Module.makeUpdateFunc = function(updateSystem)
         addInputEvent(world.input, {type='controller',id=controllerId, input=input, action=action})
       end)
     end
-    return world
+    return world,exports
   end
 end
 
