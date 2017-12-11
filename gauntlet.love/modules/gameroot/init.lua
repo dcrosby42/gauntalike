@@ -1,35 +1,58 @@
 local Dungeon = require 'modules.dungeon'
 
+local function level1()
+  return {
+    name="Level 1",
+    players={
+      -- one={
+      --   loc={100,100},
+      --   r=0,
+      -- },
+      two={
+        name="Hanzo",
+        loc={700,150},
+        r=math.pi,
+      },
+    },
+    items={
+      -- [1]={ kind='key', loc={200,100}, },
+      [2]={ kind='key', loc={300,200}, },
+    },
+  }
+end
+local function level2()
+  return {
+    name="Level 1",
+    players={
+      two={
+        name="Hanzo",
+        loc={600,450},
+        r=math.pi/2,
+      },
+    },
+    items={
+      [2]={ kind='key', loc={950,150}, },
+    },
+  }
+end
 
 local function newWorld()
   local model ={
-    mode="title"
+    mode="title",
+    currentLevel=0,
+    levelFactories={
+      level1,
+      level2,
+      level1,
+    }
   }
   return model
 end
 
+
 --
 -- UPDATE
 --
-
--- local function winGame(data,world)
---   print("WIN! "..tflatten(data))
---   world.dungeon = nil
---   world.mode = "title"
--- end
-
--- local function handlePlaythruExports(exports,world)
---   if exports then
---     for i=1,#exports do
---       local export = exports[i]
---       if export.type == "win" then
---         winGame(export,world)
---       end
---     end
---   end
---
---   return world, nil
--- end
 
 local function eachOnType(objList, fnMap)
   if objList then
@@ -41,14 +64,20 @@ local function eachOnType(objList, fnMap)
   end
 end
 
+local function setLevel(world,level)
+  local fact = world.levelFactories[level]
+  assert(fact, "No level "..tostring(level))
+  world.dungeon = Dungeon.newWorld({
+    levelInfo = fact()
+  })
+  world.currentLevel = level
+end
+
 local function updateWorld(world,action)
   if world.mode == "title" then
     if action.type == "keyboard" and action.state == "pressed" then
-      if not world.dungeon then
-        world.dungeon = Dungeon.newWorld()
-      end
-      -- world.dungeon = Dungeon.updateWorld(world.dungeon,action)
       world.mode = "playthru"
+      setLevel(world,1)
     end
 
   elseif world.mode == "playthru" then
@@ -56,9 +85,15 @@ local function updateWorld(world,action)
     world.dungeon, exports = Dungeon.updateWorld(world.dungeon, action)
     eachOnType(exports, {
       win=function(export)
-        print("WIN! "..tflatten(export))
-        world.dungeon = nil
-        world.mode = "end"
+        print("Level complete! "..tflatten(export))
+
+        local nextLevel = world.currentLevel + 1
+        if not world.levelFactories[nextLevel] then
+          world.dungeon = nil
+          world.mode = "end"
+        else
+          setLevel(world,nextLevel)
+        end
       end,
     })
 

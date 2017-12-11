@@ -26,27 +26,6 @@ local UpdateSystem = iterateFuncs({
 })
 
 
-local function level1()
-  return {
-    name="Level 1",
-    players={
-      -- one={
-      --   loc={100,100},
-      --   r=0,
-      -- },
-      two={
-        name="Hanzo",
-        loc={700,150},
-        r=math.pi,
-      },
-    },
-    items={
-      -- [1]={ kind='key', loc={200,100}, },
-      [2]={ kind='key', loc={300,200}, },
-    },
-  }
-end
-
 
 local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
@@ -61,7 +40,7 @@ local function setupResourcesAndEntities(opts, world)
     {'scoreboard',{}},
   })
 
-  Level.addLevel(estore, level1())
+  Level.addLevel(estore, opts.levelInfo)
 end
 
 
