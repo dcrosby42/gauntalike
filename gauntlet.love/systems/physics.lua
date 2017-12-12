@@ -146,39 +146,66 @@ end
 
 local function getCollisionFuncs(collState)
   local beginContact = function(a,b,contact)
+    local af,bf = contact:getFixtures()
+    adx,ady = af:getBody():getLinearVelocity()
+    bdx,bdy = bf:getBody():getLinearVelocity()
+    local contactInfo = {
+      a={
+        vel={adx,ady},
+      },
+      b={
+        vel={bdx,bdy},
+      },
+    }
     debug("beginContact a="..a:getUserData().." b="..b:getUserData())
-    table.insert(collState.begins, {a,b,contact})
+    debug("  a={"..adx..","..ady.."} b={"..bdx..","..bdy.."}")
+    table.insert(collState.begins, {a,b,contactInfo})
   end
-  local endContact = function(a,b,contact)
+
+  local endContact = function(a,b,_contact)
     debug("endContact a="..a:getUserData().." b="..b:getUserData())
-    table.insert(collState.ends, {a,b,contact})
-    contact = nil
+    table.insert(collState.ends, {a,b})
+    _contact = nil
     collectgarbage()
   end
-  return beginContact, endContact
+
+  local preSolve = function(a,b,coll)
+    -- local af,bf = coll:getFixtures()
+    -- adx,ady = af:getBody():getLinearVelocity()
+    -- bdx,bdy = bf:getBody():getLinearVelocity()
+    -- debug("preSolve  a={"..adx..","..ady.."} b={"..bdx..","..bdy.."}")
+  end
+
+  local postSolve = function(a,b,coll,normalImpulse, tangentImpulse)
+    -- print("postSolve",normalImpulse, tangentImpulse)
+  end
+
+
+  return beginContact, endContact, preSolve, postSolve
 end
 
-local function addCollision(hitEnt, hitComp, otherEnt, otherComp)
+local function addCollision(hitEnt, hitComp, otherEnt, otherComp, contactInfo)
   local comp = hitEnt:newComp('collision',{
     myCid=hitComp.cid,
     theirCid=otherComp.cid,
     theirEid=otherComp.eid,
+    contactInfo=contactInfo,
   })
   debug("  adding collision comp: hitEnt="..hitEnt.eid.." hitComp="..hitComp.cid.." otherEnt="..otherEnt.eid.." otherComp="..otherComp.cid.." --> "..Comp.debugString(comp))
 end
 
-local function handleCollisions(physWorld, collState, estore, input, res)
+local function dispatchCapturedCollisions(physWorld, collState, estore, input, res)
   if #collState.begins > 0 then
     debug("handleCollisions: num begins:"..#collState.begins)
     for _,c in ipairs(collState.begins) do
-      local a,b,con = unpack(c)
+      local a,b,contactInfo = unpack(c)
       local aComp, aEnt = estore:getCompAndEntityForCid(a:getUserData())
       local bComp, bEnt = estore:getCompAndEntityForCid(b:getUserData())
       -- debug("  aComp[eid="..aComp.eid.." cid="..aComp.cid.."] aEnt.eid="..aEnt.eid)
       -- debug("  bComp[eid="..bComp.eid.." cid="..bComp.cid.."] bEnt.eid="..bEnt.eid)
       if aEnt and bEnt then
-        addCollision(aEnt, aComp, bEnt, bComp)
-        addCollision(bEnt, bComp, aEnt, aComp)
+        addCollision(aEnt, aComp, bEnt, bComp, contactInfo)
+        addCollision(bEnt, bComp, aEnt, aComp, contactInfo)
         -- aEnt:newComp('collision',{myCid=aComp.cid, theirCid=bComp.cid, theirEid=bEnt.eid})
         -- bEnt:newComp('collision',{myCid=bComp.cid, theirCid=aComp.cid, theirEid=aEnt.eid})
       else
@@ -200,8 +227,8 @@ return defineUpdateSystem({'physicsWorld'},function(physEnt,estore,input,res)
   if world == 0 then
     world = newPhysicsWorld(physEnt.physicsWorld)
     local collState = {begins={}, ends={}}
-    local bc,ec = getCollisionFuncs(collState)
-    world:setCallbacks(bc,ec)
+    local beginCol,endCol, preSolve,postSolve = getCollisionFuncs(collState)
+    world:setCallbacks(beginCol,endCol,preSolve,postSolve)
     physEnt.physicsWorld.world = world
     physEnt.physicsWorld.collisions = collState
   end
@@ -246,14 +273,14 @@ return defineUpdateSystem({'physicsWorld'},function(physEnt,estore,input,res)
   end
 
   --
-  -- Update the physics world
+  -- Iterate the physics world
   --
   world:update(input.dt)
 
   --
   -- Process Collisions
   --
-  handleCollisions(world, physEnt.physicsWorld.collisions, estore, input, res)
+  dispatchCapturedCollisions(world, physEnt.physicsWorld.collisions, estore, input, res)
 
   --
   -- SYNC: Physics Objects->to->Components

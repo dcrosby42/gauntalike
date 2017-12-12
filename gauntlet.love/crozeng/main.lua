@@ -88,6 +88,7 @@ local function updateWorld(action)
         reloadRootModule()
       end
     end
+    return
   end
   if not RootModule then return end
   local newworld, sidefx

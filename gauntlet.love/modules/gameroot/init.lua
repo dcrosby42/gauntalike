@@ -1,50 +1,11 @@
+local Levels = require 'data.levels'
 local Dungeon = require 'modules.dungeon'
-
-local function level1()
-  return {
-    name="Level 1",
-    players={
-      -- one={
-      --   loc={100,100},
-      --   r=0,
-      -- },
-      two={
-        name="Hanzo",
-        loc={700,150},
-        r=math.pi,
-      },
-    },
-    items={
-      -- [1]={ kind='key', loc={200,100}, },
-      [2]={ kind='key', loc={300,200}, },
-    },
-  }
-end
-local function level2()
-  return {
-    name="Level 1",
-    players={
-      two={
-        name="Hanzo",
-        loc={600,450},
-        r=math.pi/2,
-      },
-    },
-    items={
-      [2]={ kind='key', loc={950,150}, },
-    },
-  }
-end
 
 local function newWorld()
   local model ={
     mode="title",
     currentLevel=0,
-    levelFactories={
-      level1,
-      level2,
-      level1,
-    }
+    levelFactories=Levels.getFactories(),
   }
   return model
 end

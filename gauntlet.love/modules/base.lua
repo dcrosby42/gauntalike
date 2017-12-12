@@ -29,7 +29,7 @@ Module.makeSetupFunc = function(postInit)
   end
 end
 
-Module.makeUpdateFunc = function(updateSystem)
+Module.makeUpdateFunc = function(updateSystem, auxFn)
   local ControllerIds = { "one", "two" }
   local keyboardOpts = { devId="two" }
 
@@ -52,6 +52,10 @@ Module.makeUpdateFunc = function(updateSystem)
         addInputEvent(world.input, {type='controller',id=controllerId, input=input, action=action})
       end)
     end
+    if auxFn then
+      world,exports = auxFn(world,action,exports)
+    end
+    assert(world,"uh... i need to return a non-nil world here...")
     return world,exports
   end
 end

@@ -88,13 +88,27 @@ Module.getBodyOpts = function(body, e, res)
     opts.body.linearDamping = 1
     opts.shape={
       type='circle',
-      radius=15,
+      radius=10,
       sensor=true,
       -- height=15,
       filter={
         -- cats={1},
       },
     }
+
+  elseif body.kind == 'mob' then
+    opts.body.angularDamping = 4
+    opts.body.linearDamping = 4
+    opts.body.mass = 2
+    opts.shape={
+      type='circle',
+      radius=15,
+      -- height=15,
+      filter={
+        -- cats={1},
+      },
+    }
+
   elseif body.kind == 'door' then
     if e.door then
       opts.body.type = 'static'

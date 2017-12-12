@@ -37,7 +37,8 @@ local function setupResourcesAndEntities(opts, world)
     {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
   })
   estore:newEntity({
-    {'scoreboard',{}},
+    {'referee',{}},
+    {'controller', {id='referee'}},
   })
 
   Level.addLevel(estore, opts.levelInfo)
@@ -46,7 +47,17 @@ end
 
 Module.newWorld = Base.makeSetupFunc(setupResourcesAndEntities)
 
-Module.updateWorld = Base.makeUpdateFunc(UpdateSystem)
+Module.updateWorld = Base.makeUpdateFunc(UpdateSystem, function(world,action,exports)
+  if action.type == 'keyboard' then
+    if action.key == '8' and action.state == 'pressed' then
+      world.estore:walkEntities(hasComps('mob'), function(e)
+        e.vel.dx = -50
+      end)
+    end
+  end
+  -- (the 'exports' come from the generated portion of the makeUpdateFunc)
+  return world,exports
+end)
 
 Module.drawWorld = Base.makeDrawFunc({
   before=function(world)

@@ -49,13 +49,30 @@ local function addPlayers(par,players)
   players._groupCounter = groupCounter
 end
 
+local function addItem(par, item)
+  par:newChild({
+    {'item',{kind='key'}},
+    {'body',{kind='item',debugDraw=true}},
+    {'pos', {x=item.loc[1], y=item.loc[2]}},
+    {'vel', {dx=0,dy=0}},
+  })
+end
+
 local function addItems(par, items)
   for _,item in pairs(items) do
+    addItem(par,item)
+  end
+end
+
+local function addMobs(par, mobs)
+  for _,mob in pairs(mobs) do
+    local vel = mob.vel or {0,0}
+    print(tflatten(vel))
     par:newChild({
-      {'item',{kind='key'}},
-      {'body',{kind='item',debugDraw=true}},
-      {'pos', {x=item.loc[1], y=item.loc[2]}},
-      {'vel', {dx=0,dy=0}},
+      {'mob',{kind=mob.kind, hp=8}},
+      {'body',{kind='mob',debugDraw=true}},
+      {'pos', {x=mob.loc[1], y=mob.loc[2]}},
+      {'vel', {dx=vel[1],dy=vel[2]}},
     })
   end
 end
@@ -68,8 +85,11 @@ local function addLevel(estore,level)
   addWallsAndDoors(pworld, level.room)
   addItems(pworld, level.items)
   addPlayers(pworld, level.players)
+  addMobs(pworld, level.mobs)
 end
 
 return {
+  addItem=addItem,
+
   addLevel=addLevel,
 }

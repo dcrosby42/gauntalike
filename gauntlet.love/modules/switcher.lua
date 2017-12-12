@@ -1,7 +1,8 @@
 -- local Dungeon = require 'modules/dungeon'
 -- local Physbox = require 'modules/physbox'
-local LevelEdit = require 'modules/leveledit'
-local GameRoot = require 'modules/gameroot'
+local LevelEdit = require 'modules.leveledit'
+local TryLevel = require 'modules.trylevel'
+local GameRoot = require 'modules.gameroot'
 
 local function newModuleSub(module,key)
   local state = module.newWorld()
@@ -13,12 +14,12 @@ local function newWorld(opts)
   local model ={
     subs={
       gameroot=newModuleSub(GameRoot,"f1"),
-      -- dungeon=newModuleSub(Dungeon,"f2"),
+      trylevel=newModuleSub(TryLevel,"f2"),
       leveledit=newModuleSub(LevelEdit,"f3"),
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "gameroot"
+  model.current = opts.current or "trylevel"
   return model
 end
 
@@ -37,6 +38,7 @@ local function updateWorld(model,action)
           return model, nil
         end
       end
+      -- if action.key == 'escape' and action.shift then
       if action.key == 'escape' then
         return model, {{type="crozeng.reloadRootModule", opts={current=model.current}}}
       end
