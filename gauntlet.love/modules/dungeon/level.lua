@@ -43,6 +43,7 @@ local function addPlayers(par,players)
       {'vel', {dx=0,dy=0}},
       {'force', {fx=0,fy=0}},
       {'controller', {id=plId}},
+      {'timer', {name='anim', countDown=false}}
     })
     groupCounter = groupCounter + 1
   end
@@ -67,7 +68,6 @@ end
 local function addMobs(par, mobs)
   for _,mob in pairs(mobs) do
     local vel = mob.vel or {0,0}
-    print(tflatten(vel))
     par:newChild({
       {'mob',{kind=mob.kind, hp=8}},
       {'body',{kind='mob',debugDraw=true}},

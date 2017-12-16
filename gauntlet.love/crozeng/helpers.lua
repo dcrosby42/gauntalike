@@ -92,8 +92,23 @@ function tkeys(t)
   end
   return keyset
 end
+
 function numkeys(t)
   return #tkeys(t)
+end
+
+function tsetdeep(t, path, value)
+  local key = table.remove(path,1)
+  if #path == 0 then
+    t[key] = value
+  else
+    local next = t[key]
+    if not next then
+      next = {}
+      t[key] = next
+    end
+    tsetdeep(next,path,value)
+  end
 end
 
 function lcopy(src)

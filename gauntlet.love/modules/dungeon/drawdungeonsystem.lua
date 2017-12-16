@@ -15,9 +15,29 @@ local function drawAscii(str, p, color)
   love.graphics.print(str, p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
 end
 
-local function drawHero(e)
-  local key = e.hero.bow
-  drawAscii(BowArts[key], e.pos, {255,255,255})
+local fps=36
+local function drawHero(e,res)
+  -- local key = e.hero.bow
+  -- drawAscii(BowArts[key], e.pos, {255,255,255})
+
+  local t = e.timers.anim.t
+  local x = e.pos.x
+  local y = e.pos.y
+  local s =  0.3
+
+  local fanim = res.anims.survivor.feet.walk
+  local fnum = math.floor(1 + (t * fps) % #fanim.pics)
+  local fpic = fanim.pics[fnum]
+  local ox = fpic.rect.w / 2
+  local oy = fpic.rect.h / 2
+  love.graphics.draw(fpic.image, fpic.quad, x,y, e.pos.r, s,s, ox,oy)
+
+  local anim = res.anims.survivor.rifle.move
+  fnum = math.floor(1 + (t * 24) % #anim.pics)
+  local pic = anim.pics[fnum]
+  ox = pic.rect.w / 2
+  oy = pic.rect.h / 2
+  love.graphics.draw(pic.image, pic.quad, x,y, e.pos.r, s,s, ox,oy)
 end
 
 local function drawArrow(e)
@@ -36,7 +56,7 @@ end
 local Module = {}
 
 local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
-  if e.hero then drawHero(e) end
+  if e.hero then drawHero(e,res) end
   if e.arrow then drawArrow(e) end
   if e.mob then drawMob(e) end
   if e.item then drawItem(e) end

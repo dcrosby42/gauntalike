@@ -9,7 +9,7 @@ local function level1()
       --   r=0,
       -- },
       two={
-        name="Hanzo",
+        name="Jack",
         loc={700,150},
         r=math.pi,
       },
@@ -31,7 +31,7 @@ local function level2()
     name="Level 1",
     players={
       two={
-        name="Hanzo",
+        name="Jack",
         loc={600,450},
         r=math.pi/2,
       },

@@ -19,7 +19,7 @@ local function newWorld(opts)
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "gameroot"
+  model.current = opts.current or "trylevel"
   return model
 end
 

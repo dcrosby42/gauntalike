@@ -2,8 +2,10 @@ local Module = {}
 
 local Base = require 'modules.base'
 local DungeonBodyDefs = require 'modules.dungeon.bodydefs'
+local Anims = require 'data.anims'
 
 -- update systems:
+local timerSystem = require 'systems.timer'
 local physicsSystem = require 'systems.physics'
 local controllerSystem = require 'systems.controller'
 local heroControllerSystem = require 'systems.herocontroller'
@@ -17,6 +19,7 @@ local Level = require 'modules.dungeon.level'
 love.physics.setMeter(64) --the height of a meter our worlds will be 64px
 
 local UpdateSystem = iterateFuncs({
+  timerSystem,
   controllerSystem,
   heroControllerSystem,
   physicsSystem,
@@ -26,10 +29,14 @@ local UpdateSystem = iterateFuncs({
 })
 
 
+require 'data/anims'
+
+
 
 local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
   world.resources.bodyDefs = DungeonBodyDefs
+  world.resources.anims = Anims.load()
 
   local estore = world.estore
 
