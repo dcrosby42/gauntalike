@@ -4,12 +4,13 @@ local function level1()
   return {
     name="Level 1",
     players={
-      one={
+      {
+        id="one",
         loc={100,100},
         r=0,
       },
-      two={
-        -- type="hero",
+      {
+        id="two",
         name="Jack",
         loc={700,150},
         r=math.pi,
@@ -20,9 +21,9 @@ local function level1()
       -- [1]={ kind='key', loc={300,200}, },
     },
     mobs={
-      [1]={ kind='slime', loc={300,300}, },
-      [2]={ kind='slime', loc={250,350}, },
-      [3]={ kind='slime', loc={300,400}, },
+      { kind='slime', loc={300,300}, },
+      { kind='slime', loc={250,350}, },
+      { kind='slime', loc={300,400}, },
     },
   }
 end

@@ -34,26 +34,27 @@ end
 
 local function addPlayers(par,players)
   local groupCounter = players._groupCounter or 1
-  for plId,pl in pairs(players) do
+  for _,pl in pairs(players) do
+    pl.groupId = -groupCounter
     if pl.type == 'archer' then
       par:newChild({
         {'archer', {speed=400,hiSpeed=400, loSpeed=200}},
         {'name', {name=pl.name or "Archer"}},
-        {'body',{kind='archer',group=-groupCounter, debugDraw=false}},
+        {'body',{kind='archer',group=pl.groupId, debugDraw=false}},
         {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=10, oy=5, sx=1.5,sy=1.5}},
         {'vel', {dx=0,dy=0}},
         {'force', {fx=0,fy=0}},
-        {'controller', {id=plId}},
+        {'controller', {id=pl.id}},
       })
     else
       par:newChild({
         {'hero', {feet="idle", weapon="flashlight", action="idle"}},
         {'name', {name=pl.name or "Hero"}},
-        {'body',{kind='survivor',group=-groupCounter, debugDraw=false}},
+        {'body',{kind='survivor',group=pl.groupId, debugDraw=false}},
         {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=10, oy=5, sx=0.4,sy=0.4}},
         {'vel', {dx=0,dy=0}},
         {'force', {fx=0,fy=0}},
-        {'controller', {id=plId}},
+        {'controller', {id=pl.id}},
         {'timer', {name='moveAnim', countDown=false}},
         {'timer', {name='weaponAnim', countDown=false}},
       })
