@@ -8,6 +8,7 @@ local Anims = require 'data.anims'
 local timerSystem = require 'systems.timer'
 local physicsSystem = require 'systems.physics'
 local controllerSystem = require 'systems.controller'
+local archerControllerSystem = require 'systems.archercontroller'
 local heroControllerSystem = require 'systems.herocontroller'
 local collisionSystem = require 'systems.collision'
 local refereeSystem = require 'systems.referee'
@@ -21,6 +22,7 @@ love.physics.setMeter(64) --the height of a meter our worlds will be 64px
 local UpdateSystem = iterateFuncs({
   timerSystem,
   controllerSystem,
+  archerControllerSystem,
   heroControllerSystem,
   physicsSystem,
   collisionSystem,
@@ -68,7 +70,8 @@ end)
 
 Module.drawWorld = Base.makeDrawFunc({
   before=function(world)
-    love.graphics.setBackgroundColor(40,50,0)
+    -- love.graphics.setBackgroundColor(40,50,0)
+    love.graphics.setBackgroundColor(40,40,40)
   end,
   system=iterateFuncs({
     drawDungeon,

@@ -4,11 +4,12 @@ local function level1()
   return {
     name="Level 1",
     players={
-      -- one={
-      --   loc={100,100},
-      --   r=0,
-      -- },
+      one={
+        loc={100,100},
+        r=0,
+      },
       two={
+        -- type="hero",
         name="Jack",
         loc={700,150},
         r=math.pi,

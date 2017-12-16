@@ -73,13 +73,27 @@ Module.getBodyOpts = function(body, e, res)
     -- opts.body.linearDamping = 6
     opts.shape={
       type='rectangle',
-      -- x=-5,
-      -- y=5,
+      x=-5,
+      y=5,
       width=35,
       height=2,
       filter={
         -- cats={1},
         -- mask={1},
+      },
+    }
+  elseif body.kind == 'survivor' then
+    opts.body.angularDamping = 3
+    opts.body.linearDamping = 6
+    opts.shape={
+      type='rectangle',
+      x=-15,
+      y=2,
+      width=40,
+      height=30,
+      filter={
+        -- cats={1},
+        -- mask={2},
       },
     }
 

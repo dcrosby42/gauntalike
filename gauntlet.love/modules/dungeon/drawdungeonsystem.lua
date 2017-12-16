@@ -15,25 +15,31 @@ local function drawAscii(str, p, color)
   love.graphics.print(str, p.x, p.y, p.r, p.sx, p.sy, p.ox, p.oy)
 end
 
+local function drawArcher(e,res)
+  local key = e.archer.bow
+  drawAscii(BowArts[key], e.pos, {255,255,255})
+end
+
 local fps=36
 local function drawHero(e,res)
-  -- local key = e.hero.bow
-  -- drawAscii(BowArts[key], e.pos, {255,255,255})
-
-  local t = e.timers.anim.t
+  local t = e.timers.moveAnim.t
   local x = e.pos.x
   local y = e.pos.y
-  local s =  0.3
+  local s = e.pos.sx
 
-  local fanim = res.anims.survivor.feet.walk
+  local fanim = res.anims.survivor.feet[e.hero.feet]
   local fnum = math.floor(1 + (t * fps) % #fanim.pics)
   local fpic = fanim.pics[fnum]
   local ox = fpic.rect.w / 2
   local oy = fpic.rect.h / 2
   love.graphics.draw(fpic.image, fpic.quad, x,y, e.pos.r, s,s, ox,oy)
 
-  local anim = res.anims.survivor.rifle.move
-  fnum = math.floor(1 + (t * 24) % #anim.pics)
+  if e.hero.action == 'idle' or e.hero.action == 'move' then
+  else
+    t = e.timers.weaponAnim.t
+  end
+  local anim = res.anims.survivor[e.hero.weapon][e.hero.action]
+  fnum = math.floor(1 + (t * fps) % #anim.pics)
   local pic = anim.pics[fnum]
   ox = pic.rect.w / 2
   oy = pic.rect.h / 2
@@ -56,6 +62,7 @@ end
 local Module = {}
 
 local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
+  if e.archer then drawArcher(e) end
   if e.hero then drawHero(e,res) end
   if e.arrow then drawArrow(e) end
   if e.mob then drawMob(e) end

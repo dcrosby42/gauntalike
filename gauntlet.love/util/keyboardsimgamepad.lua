@@ -14,7 +14,15 @@ local Mapping = {
   left={'rightx',-1},
   right={'rightx',1},
 
+  rshift={'r1',1},
   space={'r2',1},
+  lctrl={'l1',1},
+  lshift={'l2',1},
+
+  ["1"]={'face1',1},
+  ["2"]={'face2',1},
+  ["3"]={'face3',1},
+  ["4"]={'face4',1},
 }
 
 Module.handleKeyboard = function(action, opts, callback)
@@ -47,6 +55,8 @@ Module.handleKeyboard = function(action, opts, callback)
     s = s + changeVal
     State[axis] = s
     callback(controllerId, axis, s)
+  -- else
+  --   print(tflatten(action))
   end
 end
 
