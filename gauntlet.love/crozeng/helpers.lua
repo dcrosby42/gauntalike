@@ -111,6 +111,18 @@ function tsetdeep(t, path, value)
   end
 end
 
+function tgetdeep(t,path)
+  local key = table.remove(path,1)
+  local v = t[key]
+  if v == nil then return nil end
+  if #path == 0 then return v end
+  if type(v) == "table" then
+    return tgetdeep(v,path)
+  else
+    return nil
+  end
+end
+
 function lcopy(src)
   local c = {}
   for i=1,#src do

@@ -3,6 +3,7 @@
 local LevelEdit = require 'modules.leveledit'
 local TryLevel = require 'modules.trylevel'
 local GameRoot = require 'modules.gameroot'
+local AnimTest = require 'modules.animtest'
 
 local function newModuleSub(module,key)
   local state = module.newWorld()
@@ -16,10 +17,11 @@ local function newWorld(opts)
       gameroot=newModuleSub(GameRoot,"f1"),
       trylevel=newModuleSub(TryLevel,"f2"),
       leveledit=newModuleSub(LevelEdit,"f3"),
+      animtest=newModuleSub(AnimTest,"f4"),
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "trylevel"
+  model.current = opts.current or "animtest"
   return model
 end
 

@@ -125,6 +125,8 @@ local function loadFile(name)
     local loader = Loaders[getFileType(name)]
     if loader then return loader(name) end
     error("loadFile("..name..") failed; no loader for "..name)
+  else
+    error("loadFile("..name..") failed; no file")
   end
 end
 
@@ -164,6 +166,19 @@ local function listDataFiles(subdir)
   return recursiveFileList(gamePath("data"..suff))
 end
 
+local LoadFileCache = {}
+local function loadFileCached(name)
+  local data = LoadFileCache[name]
+  if data == nil then
+    data = loadFile(name)
+    LoadFileCache[name] = data
+  end
+  return data
+end
+
+local function clearLoadFileCache()
+  LoadFileCache = {}
+end
 
 -- local function test()
 --   local assets = listAssetFiles()
@@ -193,6 +208,8 @@ return {
   loadFile=loadFile,
   saveFile=saveFile,
   getFileType=getFileType,
+  loadFileCached=loadFileCached,
+  clearLoadFileCache=clearLoadFileCache,
   test=function()
   end,
 }
