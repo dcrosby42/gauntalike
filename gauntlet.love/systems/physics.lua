@@ -112,6 +112,9 @@ local function newPhysicsObject(physicsWorld,opts)
   if b.angularDamping then
     obj.body:setAngularDamping(b.angularDamping)
   end
+  if b.fixedRotation then
+    obj.body:setFixedRotation(true)
+  end
 
   return obj
 end

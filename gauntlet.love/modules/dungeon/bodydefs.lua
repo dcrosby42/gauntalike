@@ -100,6 +100,7 @@ Module.getBodyOpts = function(body, e, res)
   elseif body.kind == 'gauntletHero' then
     opts.body.angularDamping = 3
     opts.body.linearDamping = 6
+    opts.body.fixedRotation = true
     opts.shape={
       type='rectangle',
       x=0,

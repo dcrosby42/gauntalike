@@ -1,11 +1,17 @@
 local PI_2 = math.pi / 2
+local PI_4 = math.pi / 4
+local floor = math.floor
 local arcTan = math.atan2
 local sin = math.sin
 local cos = math.cos
 local sqrt = math.sqrt
 
-local fireArrow, bowStateMachine
-local Speed=400
+local fireArrow, elfStateMachine
+local angleToDir
+
+local Speed=200
+
+
 local system = defineUpdateSystem({'hero','controller'}, function(e,estore,input,res)
   local c = e.controller
 
@@ -23,15 +29,42 @@ local system = defineUpdateSystem({'hero','controller'}, function(e,estore,input
   local ry = c.righty or 0
   if rx ~= 0 or ry ~= 0 then
     local r = arcTan(rx,-ry) - PI_2 -- math.atan2 is smart about y=0 case
-    e.pos.r = r
+    e.hero.r = r
+    e.hero.dir = angleToDir(r)
   end
 
+
   -- Firing state machine
-  -- TODO bowStateMachine(e,estore,input,res)
+  -- bowStateMachine(e,estore,input,res)
+  if e.hero.race == "elf" then
+    elfStateMachine(e,estore,input,res)
+  end
+
+  -- Determine proper sprite animation based on new hero state
+  if e.vel.dx == 0 and e.vel.dy == 0 then
+    e.hero.action = "stand"
+  else
+    e.hero.action = "walk"
+  end
+
+  e.sprite.anim = e.hero.race.."/"..e.hero.dir.."/"..e.hero.action
+
 end)
 
-local function fireArrow(e, estore,input,res)
-  local r = e.pos.r
+-- Determine abstract direction based on angle in radians
+-- declared local above
+local dirs={"r","dr","d","dl","l","ul","u","ur"}
+function angleToDir(r)
+  local idx = floor(r / PI_4)
+  if idx < 0 then
+    idx = #dirs+idx -- negative indexing, coming back from the end of the array
+  end
+  return dirs[idx+1]
+end
+
+-- declared local above
+function fireArrow(e, estore,input,res)
+  local r = e.hero.r
   local vel = 500 - (e.hero.bowtimer * 800)
   -- local vel = 500
   local dx = vel * cos(r)
@@ -48,7 +81,8 @@ local function fireArrow(e, estore,input,res)
   end)
 end
 
-local function bowStateMachine(e,estore,input,res)
+-- declared local above
+function bowStateMachine(e,estore,input,res)
   local hero = e.hero
   local c = e.controller
 

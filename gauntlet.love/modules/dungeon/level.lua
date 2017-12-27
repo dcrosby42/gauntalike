@@ -43,14 +43,14 @@ local function addPlayers(par,players)
     pl.groupId = -groupCounter
     if pl.type == 'elf' then
       par:newChild({
-        {'hero', {}},
+        {'hero', {race="elf",dir="d",action="stand"}},
         {'name', {name=pl.name or "GauntletHero"}},
-        {'sprite',{anim="elf/d/walk"}},
+        {'sprite',{anim="elf/d/stand"}},
         {'timer',{name="spriteAnim", countDown=false}},
-        {'body',{kind='gauntletHero',group=pl.groupId, debugDraw=true}},
+        {'body',{kind='gauntletHero',group=pl.groupId, debugDraw=false}},
         {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=16, oy=16, sx=2,sy=2}},
         {'vel', {dx=0,dy=0}},
-        {'force', {fx=0,fy=0}},
+        -- {'force', {fx=0,fy=0}},
         {'controller', {id = pl.id}},
       })
 

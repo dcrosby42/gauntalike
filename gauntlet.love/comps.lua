@@ -27,7 +27,7 @@ Comp.define("force", {'fx',0,'fy',0})
 Comp.define("collision", {'myCid','','theirCid','','theirEid','','contactInfo',{}})
 
 Comp.define("referee", {})
-Comp.define("hero", {})
+Comp.define("hero", {'race','elf','dir','d','action','stand','r',0})
 Comp.define("mob", {'hp',0})
 Comp.define("arrow", {})
 Comp.define("door", {'x',0,'y',0,'w',0,'h',0})
