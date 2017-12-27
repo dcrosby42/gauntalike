@@ -7,13 +7,13 @@ local Level = require 'modules.dungeon.level'
 
 
 -- update systems:
-local timer = require 'systems.timer'
-local physics = require 'systems.physics'
-local controller = require 'systems.controller'
-local archerController = require 'systems.archercontroller'
-local survivorController = require 'systems.survivorcontroller'
-local collision = require 'systems.collision'
-local referee = require 'systems.referee'
+-- local timer = require 'systems.timer'
+-- local dude = require 'systems.physics'
+-- local controller = require 'systems.controller'
+-- local archerController = require 'systems.archercontroller'
+-- local survivorController = require 'systems.survivorcontroller'
+-- local collision = require 'systems.collision'
+-- local referee = require 'systems.referee'
 
 -- drawing systems:
 local drawPhysics = require 'systems.physicsdraw'
@@ -22,17 +22,27 @@ local drawDungeon = require 'modules.dungeon.drawdungeonsystem'
 
 love.physics.setMeter(64) --the height of a meter our worlds will be 64px
 
-local UpdateSystem = iterateFuncs({
-  timer,
-  controller,
-  -- archerControllerSystem,
-  -- survivorControllerSystem,
-  hero,
-  physics,
-  collision,
+local function requireAndCompose(systemReqs)
+  local systems = {}
+  for i,req in ipairs(systemReqs) do
+    local system = require(req)
+    assert(system, "Cannot require system '"..req.."'")
+    table.insert(systems,system)
+  end
 
-  referee,
-})
+  return iterateFuncs(systems)
+end
+
+local systemRequires = {
+  'systems.timer',
+  'systems.controller',
+  'systems.herocontroller',
+  'systems.physics',
+  'systems.collision',
+  'systems.referee',
+}
+
+local ComposedSystem = requireAndCompose(systemRequires)
 
 local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
@@ -42,9 +52,11 @@ local function setupResourcesAndEntities(opts, world)
   local estore = world.estore
 
   estore:newEntity({
+    {'name',{name="physics world"}},
     {'physicsWorld', {allowSleep=false, gx=0, gy=0}},
   })
   estore:newEntity({
+    {'name',{name="Referee"}},
     {'referee',{}},
     {'controller', {id='referee'}},
   })
@@ -55,7 +67,7 @@ end
 
 Module.newWorld = Base.makeSetupFunc(setupResourcesAndEntities)
 
-Module.updateWorld = Base.makeUpdateFunc(UpdateSystem, function(world,action,exports)
+Module.updateWorld = Base.makeUpdateFunc(ComposedSystem, function(world,action,exports)
   if action.type == 'keyboard' then
     if action.key == '8' and action.state == 'pressed' then
       world.estore:walkEntities(hasComps('mob'), function(e)

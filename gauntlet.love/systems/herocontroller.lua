@@ -5,17 +5,17 @@ local cos = math.cos
 local sqrt = math.sqrt
 
 local fireArrow, bowStateMachine
-
+local Speed=400
 local system = defineUpdateSystem({'hero','controller'}, function(e,estore,input,res)
   local c = e.controller
 
   -- Set velocity based on left stick
   if e.force then
-    e.force.fx = c.leftx * e.hero.speed
-    e.force.fy = c.lefty * e.hero.speed
+    e.force.fx = c.leftx * Speed
+    e.force.fy = c.lefty * Speed
   else
-    e.vel.dx = c.leftx * e.hero.speed
-    e.vel.dy = c.lefty * e.hero.speed
+    e.vel.dx = c.leftx * Speed
+    e.vel.dy = c.lefty * Speed
   end
 
   -- Set aim dir based on absolute dir of right stick

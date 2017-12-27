@@ -1,30 +1,35 @@
 
 local function addWallsAndDoors(par)
   par:newChild({
+    {'name', {name="Door"}},
     {'door', {w=20,h=122}},
     {'body',{kind='door',debugDraw=true}},
     {'pos', {x=1024-10,y=768/2}},
     {'vel', {dx=0,dy=0}},
   })
   par:newChild({
+    {'name', {name="Door"}},
     {'door', {w=20,h=122}},
     {'body',{kind='door',debugDraw=true}},
     {'pos', {x=10,y=768/2}},
     {'vel', {dx=0,dy=0}},
   })
   par:newChild({
+    {'name', {name="Door"}},
     {'door', {w=378,h=20}},
     {'body',{kind='door',debugDraw=true}},
     {'pos', {x=1024/2,y=10}},
     {'vel', {dx=0,dy=0}},
   })
   par:newChild({
+    {'name', {name="Door"}},
     {'door', {w=378,h=20}},
     {'body',{kind='door',debugDraw=true}},
     {'pos', {x=1024/2,y=768-10}},
     {'vel', {dx=0,dy=0}},
   })
   par:newChild({
+    {'name', {name="RoomWalls"}},
     {'roomWalls', {}},
     {'body',{kind='roomWalls',debugDraw=true}},
     {'pos', {x=1024/2,y=768/2}},
@@ -43,7 +48,7 @@ local function addPlayers(par,players)
         {'sprite',{anim="elf/d/walk"}},
         {'timer',{name="spriteAnim", countDown=false}},
         {'body',{kind='gauntletHero',group=pl.groupId, debugDraw=true}},
-        {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=10, oy=5, sx=2,sy=2}},
+        {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=16, oy=16, sx=2,sy=2}},
         {'vel', {dx=0,dy=0}},
         {'force', {fx=0,fy=0}},
         {'controller', {id = pl.id}},
@@ -98,6 +103,7 @@ local function addMobs(par, mobs)
   for _,mob in pairs(mobs) do
     local vel = mob.vel or {0,0}
     par:newChild({
+      {'name', {name=mob.kind.." mob"}},
       {'mob',{kind=mob.kind, hp=8}},
       {'body',{kind='mob',debugDraw=true}},
       {'pos', {x=mob.loc[1], y=mob.loc[2]}},

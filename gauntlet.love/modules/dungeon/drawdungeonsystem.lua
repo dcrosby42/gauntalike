@@ -25,6 +25,8 @@ local function drawHero(e,res)
   local x = e.pos.x
   local y = e.pos.y
   local s = e.pos.sx
+  local ox = e.pos.ox
+  local oy = e.pos.oy
   local anim = res.anims[e.sprite.anim]
   local pic = anim.func(t)
   love.graphics.draw(pic.image, pic.quad, x,y, e.pos.r, s,s, ox,oy)
@@ -78,12 +80,11 @@ local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
   if e.arrow then drawArrow(e) end
   if e.mob then drawMob(e) end
   if e.item then drawItem(e) end
-  if e.physicsObjects then
-    for _,obj in ipairs(e.physicsObjects) do
-      print("x")
-      drawPhysicsObject(e,obj)
-    end
-  end
+  -- if e.physicsObjects then
+  --   for _,obj in ipairs(e.physicsObjects) do
+  --     drawPhysicsObject(e,obj)
+  --   end
+  -- end
 end)
 
 return drawDungeon
