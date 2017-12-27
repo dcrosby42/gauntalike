@@ -97,6 +97,21 @@ Module.getBodyOpts = function(body, e, res)
       },
     }
 
+  elseif body.kind == 'gauntletHero' then
+    opts.body.angularDamping = 3
+    opts.body.linearDamping = 6
+    opts.shape={
+      type='rectangle',
+      x=-15,
+      y=2,
+      width=40,
+      height=30,
+      filter={
+        -- cats={1},
+        -- mask={2},
+      },
+    }
+
   elseif body.kind == 'item' then
     opts.body.angularDamping = 1
     opts.body.linearDamping = 1

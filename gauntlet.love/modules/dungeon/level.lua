@@ -36,7 +36,20 @@ local function addPlayers(par,players)
   local groupCounter = players._groupCounter or 1
   for _,pl in pairs(players) do
     pl.groupId = -groupCounter
-    if pl.type == 'archer' then
+    if pl.type == 'elf' then
+      par:newChild({
+        {'hero', {}},
+        {'name', {name=pl.name or "GauntletHero"}},
+        {'sprite',{anim="elf/d/walk"}},
+        {'timer',{name="spriteAnim", countDown=false}},
+        {'body',{kind='gauntletHero',group=pl.groupId, debugDraw=true}},
+        {'pos', {x=pl.loc[1],y=pl.loc[2], r=pl.r, ox=10, oy=5, sx=2,sy=2}},
+        {'vel', {dx=0,dy=0}},
+        {'force', {fx=0,fy=0}},
+        {'controller', {id = pl.id}},
+      })
+
+    elseif pl.type == 'archer' then
       par:newChild({
         {'archer', {speed=400,hiSpeed=400, loSpeed=200}},
         {'name', {name=pl.name or "Archer"}},
@@ -46,7 +59,7 @@ local function addPlayers(par,players)
         {'force', {fx=0,fy=0}},
         {'controller', {id=pl.id}},
       })
-    else
+    elseif pl.type == 'survivor' then
       par:newChild({
         {'hero', {feet="idle", weapon="flashlight", action="idle"}},
         {'name', {name=pl.name or "Hero"}},
@@ -58,6 +71,8 @@ local function addPlayers(par,players)
         {'timer', {name='moveAnim', countDown=false}},
         {'timer', {name='weaponAnim', countDown=false}},
       })
+    else
+      error("Cannot add player, unknown pl.type='"..pl.type.."' in: "..tdebug(pl))
     end
     groupCounter = groupCounter + 1
   end

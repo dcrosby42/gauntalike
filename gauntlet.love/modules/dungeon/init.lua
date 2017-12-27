@@ -3,37 +3,36 @@ local Module = {}
 local Base = require 'modules.base'
 local DungeonBodyDefs = require 'modules.dungeon.bodydefs'
 local Anims = require 'data.anims'
+local Level = require 'modules.dungeon.level'
+
 
 -- update systems:
-local timerSystem = require 'systems.timer'
-local physicsSystem = require 'systems.physics'
-local controllerSystem = require 'systems.controller'
-local archerControllerSystem = require 'systems.archercontroller'
-local heroControllerSystem = require 'systems.herocontroller'
-local collisionSystem = require 'systems.collision'
-local refereeSystem = require 'systems.referee'
+local timer = require 'systems.timer'
+local physics = require 'systems.physics'
+local controller = require 'systems.controller'
+local archerController = require 'systems.archercontroller'
+local survivorController = require 'systems.survivorcontroller'
+local collision = require 'systems.collision'
+local referee = require 'systems.referee'
+
 -- drawing systems:
 local drawPhysics = require 'systems.physicsdraw'
 local drawDungeon = require 'modules.dungeon.drawdungeonsystem'
-local Level = require 'modules.dungeon.level'
+
 
 love.physics.setMeter(64) --the height of a meter our worlds will be 64px
 
 local UpdateSystem = iterateFuncs({
-  timerSystem,
-  controllerSystem,
-  archerControllerSystem,
-  heroControllerSystem,
-  physicsSystem,
-  collisionSystem,
+  timer,
+  controller,
+  -- archerControllerSystem,
+  -- survivorControllerSystem,
+  hero,
+  physics,
+  collision,
 
-  refereeSystem,
+  referee,
 })
-
-
-require 'data/anims'
-
-
 
 local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
