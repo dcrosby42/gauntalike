@@ -34,6 +34,7 @@ Comp.define("door", {'x',0,'y',0,'w',0,'h',0})
 Comp.define("wall", {'x',0,'y',0,'w',0,'h',0})
 Comp.define("roomWalls", {})
 Comp.define("item", {'kind',''})
+Comp.define("inv", {'stoneKeys',0})
 
 
 Comp.define("archer", {'id','','bow','rest', 'bowtimer',0, 'speed',200,'hiSpeed',200,'loSpeed',100,'numKeys',0})

@@ -13,8 +13,8 @@ local function entity_setSelfDestruct(e,t)
 end
 
 local function hero_item(coll,me,them, estore,input,res)
-  if them.item.kind == 'key' then
-    me.hero.numKeys = me.hero.numKeys + 1
+  if them.item.kind == 'stoneKey' then
+    me.inv.stoneKeys = me.inv.stoneKeys + 1
   end
   estore:destroyEntity(them)
 end
@@ -76,8 +76,8 @@ local function arrow_other(coll,me,them, estore,input,res)
 end
 
 local function hero_door(coll,me,them, estore,input,res)
-  if me.hero.numKeys > 0 then
-    me.hero.numKeys = me.hero.numKeys - 1
+  if me.inv.stoneKeys > 0 then
+    me.inv.stoneKeys = me.inv.stoneKeys - 1
     estore:destroyEntity(them)
   else
     -- print("  This door requires a key!")
