@@ -161,6 +161,7 @@ Module.load = function()
 
   --loadSurvivorAnims(anims)
   loadAsepriteSheet(anims, "elf-sheet", "elf/")
+  loadAsepriteSheet(anims, "item-sheet", "item/")
 
   return anims
 end

@@ -88,8 +88,9 @@ end
 local function addItem(par, item)
   par:newChild({
     {'item',{kind='stoneKey'}},
-    {'body',{kind='item',debugDraw=true}},
-    {'pos', {x=item.loc[1], y=item.loc[2]}},
+    {'body',{kind='item',debugDraw=false}},
+    {'sprite',{anim="item/stonekey"}},
+    {'pos', {x=item.loc[1], y=item.loc[2], ox=16,oy=16,sx=1,sy=1}},
     {'vel', {dx=0,dy=0}},
   })
 end

@@ -75,8 +75,9 @@ end
 -- end
 
 local function drawItem(e)
-  love.graphics.print(e.item.kind,e.pos.x-5, e.pos.y-5)
+  -- love.graphics.print(e.item.kind,e.pos.x-5, e.pos.y-5)
 end
+
 local function drawMob(e)
   local x = e.pos.x-7
   local y = e.pos.y-6
