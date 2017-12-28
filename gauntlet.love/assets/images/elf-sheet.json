@@ -790,6 +790,33 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
+   },
+   {
+    "filename": "elf 88.ase",
+    "frame": { "x": 256, "y": 160, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "elf 89.ase",
+    "frame": { "x": 288, "y": 160, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "elf 90.ase",
+    "frame": { "x": 320, "y": 160, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
    }
  ],
  "meta": {
@@ -839,7 +866,8 @@
    { "name": "u/arrow", "from": 84, "to": 84, "direction": "forward" },
    { "name": "ul/arrow", "from": 85, "to": 85, "direction": "forward" },
    { "name": "l/arrow", "from": 86, "to": 86, "direction": "forward" },
-   { "name": "dl/arrow", "from": 87, "to": 87, "direction": "forward" }
+   { "name": "dl/arrow", "from": 87, "to": 87, "direction": "forward" },
+   { "name": "splode", "from": 88, "to": 90, "direction": "forward" }
   ]
  }
 }

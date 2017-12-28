@@ -92,6 +92,7 @@ function elf_fireArrow(e, estore,input,res)
   local y = e.pos.y-4
   estore:seekEntity(hasComps('physicsWorld'), function(pwEnt)
     local arrowE = pwEnt:newChild({
+      {'name', {name='arrow'}},
       {'arrow', {r=r}},
       {'sprite',{anim=""}},
       {'body', {kind='arrow',group=e.body.group, debugDraw=false}},

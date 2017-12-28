@@ -35,13 +35,13 @@ local function drawSprite(e,res)
   love.graphics.draw(pic.image, pic.quad, x,y, e.pos.r, s,s, ox,oy)
 end
 
-local function drawHero(e,res)
-  drawSprite(e,res)
-end
-
-local function drawArrow(e,res)
-  drawSprite(e,res)
-end
+-- local function drawHero(e,res)
+--   drawSprite(e,res)
+-- end
+--
+-- local function drawArrow(e,res)
+--   drawSprite(e,res)
+-- end
 
 local fps=36
 local function drawSurvivor(e,res)
@@ -87,10 +87,11 @@ end
 local Module = {}
 
 local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
-  if e.hero then drawHero(e,res) end
+  -- if e.hero then drawHero(e,res) end
+  -- if e.arrow then drawArrow(e,res) end
+  if e.sprite then drawSprite(e,res) end
   if e.archer then drawArcher(e) end
   if e.survivor then drawSurvivor(e,res) end
-  if e.arrow then drawArrow(e,res) end
   if e.mob then drawMob(e) end
   if e.item then drawItem(e) end
   -- if e.physicsObjects then

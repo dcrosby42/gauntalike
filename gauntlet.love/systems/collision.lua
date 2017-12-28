@@ -5,6 +5,13 @@ local sqrt = math.sqrt
 
 local Level = require 'modules.dungeon.level'
 
+local function entity_setSelfDestruct(e,t)
+  if not e.timers or not e.timers.self_destruct then
+    e:newComp("tag", {name="self_destruct"})
+    e:newComp("timer", {name="self_destruct",t=t})
+  end
+end
+
 local function hero_item(coll,me,them, estore,input,res)
   if them.item.kind == 'key' then
     me.hero.numKeys = me.hero.numKeys + 1
@@ -24,7 +31,7 @@ local function collisionVelocity(coll)
 end
 
 
-local function mob_arrow(coll,me,them, estore,input,res)
+local function mob_arrow(coll,me,arrow, estore,input,res)
   -- print("== contactInfo ==\n"..tdebug(coll.contactInfo))
   local mag = collisionVelocity(coll)
   local add = math.floor(4 * ((mag-125) / (500-125)))
@@ -45,9 +52,27 @@ local function mob_arrow(coll,me,them, estore,input,res)
 
     estore:destroyEntity(me) -- remove mob
   end
-  estore:destroyEntity(them) -- remove arrow
+  -- Add splode effect:
+  local arrowBody = res.caches.physicsObjects[arrow.body.cid].body
+  local splodeX,splodeY = arrowBody:getWorldPoint(13,0)
+  local splode = estore:newEntity({
+    {'name', {name='splode'}},
+    {'sprite',{anim="elf/splode"}},
+    {'timer',{name='spriteAnim',countDown=false,t=0,reset=0.27}},
+    {'pos', {x=splodeX, y=splodeY, ox=16,oy=16,sx=2,sy=2}},
+  })
+  entity_setSelfDestruct(splode,0.27)
+  estore:destroyEntity(arrow) -- remove arrow
+
+
+
+
   print(msg)
 
+end
+
+local function arrow_other(coll,me,them, estore,input,res)
+  entity_setSelfDestruct(me,1)
 end
 
 local function hero_door(coll,me,them, estore,input,res)
@@ -76,10 +101,7 @@ return defineUpdateSystem({'collision'}, function(me,estore,input,res)
       mob_arrow(coll,me,them,estore,input,res)
 
     elseif me.arrow then
-      if not me.timers or not me.timers.self_destruct then
-        me:newComp("tag", {name="self_destruct"})
-        me:newComp("timer", {name="self_destruct",t=1})
-      end
+      arrow_other(coll,me,them,estore,input,res)
     end
 
     table.insert(cleanups,coll) -- defered component removal
