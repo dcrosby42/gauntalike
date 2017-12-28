@@ -35,6 +35,7 @@ end
 
 local systemRequires = {
   'systems.timer',
+  'systems.selfdestruct',
   'systems.controller',
   'systems.herocontroller',
   'systems.physics',

@@ -43,7 +43,7 @@ local function addPlayers(par,players)
     pl.groupId = -groupCounter
     if pl.type == 'elf' then
       par:newChild({
-        {'hero', {race="elf",dir="d",action="stand"}},
+        {'hero', {race="elf",dir="d",action="stand",r=math.pi/2}},
         {'name', {name=pl.name or "GauntletHero"}},
         {'sprite',{anim="elf/d/stand"}},
         {'timer',{name="spriteAnim", countDown=false}},
@@ -104,7 +104,7 @@ local function addMobs(par, mobs)
     local vel = mob.vel or {0,0}
     par:newChild({
       {'name', {name=mob.kind.." mob"}},
-      {'mob',{kind=mob.kind, hp=8}},
+      {'mob',{kind=mob.kind, hp=20}},
       {'body',{kind='mob',debugDraw=true}},
       {'pos', {x=mob.loc[1], y=mob.loc[2]}},
       {'vel', {dx=vel[1],dy=vel[2]}},

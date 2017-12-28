@@ -20,8 +20,11 @@ local function drawArcher(e,res)
   drawAscii(BowArts[key], e.pos, {255,255,255})
 end
 
-local function drawHero(e,res)
-  local t = e.timers.spriteAnim.t
+local function drawSprite(e,res)
+  local t = 0
+  if e.timers and e.timers.spriteAnim then
+    t = e.timers.spriteAnim.t
+  end
   local x = e.pos.x
   local y = e.pos.y
   local s = e.pos.sx
@@ -30,6 +33,14 @@ local function drawHero(e,res)
   local anim = res.anims[e.sprite.anim]
   local pic = anim.func(t)
   love.graphics.draw(pic.image, pic.quad, x,y, e.pos.r, s,s, ox,oy)
+end
+
+local function drawHero(e,res)
+  drawSprite(e,res)
+end
+
+local function drawArrow(e,res)
+  drawSprite(e,res)
 end
 
 local fps=36
@@ -58,9 +69,11 @@ local function drawSurvivor(e,res)
   love.graphics.draw(pic.image, pic.quad, x,y, e.pos.r, s,s, ox,oy)
 end
 
-local function drawArrow(e)
-  drawAscii(ArrowArts.default, e.pos, {150,150,200})
-end
+-- XXX
+-- local function drawArrow(e)
+--   drawAscii(ArrowArts.default, e.pos, {150,150,200})
+-- end
+
 local function drawItem(e)
   love.graphics.print(e.item.kind,e.pos.x-5, e.pos.y-5)
 end
@@ -77,7 +90,7 @@ local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
   if e.hero then drawHero(e,res) end
   if e.archer then drawArcher(e) end
   if e.survivor then drawSurvivor(e,res) end
-  if e.arrow then drawArrow(e) end
+  if e.arrow then drawArrow(e,res) end
   if e.mob then drawMob(e) end
   if e.item then drawItem(e) end
   -- if e.physicsObjects then

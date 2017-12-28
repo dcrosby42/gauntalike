@@ -75,6 +75,11 @@ return defineUpdateSystem({'collision'}, function(me,estore,input,res)
     elseif me.mob and them.arrow then
       mob_arrow(coll,me,them,estore,input,res)
 
+    elseif me.arrow then
+      if not me.timers or not me.timers.self_destruct then
+        me:newComp("tag", {name="self_destruct"})
+        me:newComp("timer", {name="self_destruct",t=1})
+      end
     end
 
     table.insert(cleanups,coll) -- defered component removal
