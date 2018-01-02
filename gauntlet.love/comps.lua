@@ -39,3 +39,4 @@ Comp.define("inv", {'stoneKeys',0})
 
 Comp.define("archer", {'id','','bow','rest', 'bowtimer',0, 'speed',200,'hiSpeed',200,'loSpeed',100,'numKeys',0})
 Comp.define("survivor", {'feet','idle','weapon','flashlight', 'action','idle', 'attack','', 'numKeys',0})
+Comp.define("map", {})

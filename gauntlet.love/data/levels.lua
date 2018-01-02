@@ -3,6 +3,7 @@ local Module = {}
 local function level1()
   return {
     name="Level 1",
+    map="demo_map_1",
     players={
       {
         id="two",
@@ -27,6 +28,7 @@ end
 local function level2()
   return {
     name="Level 1",
+    map="demo_map_1",
     players={
       {
         id="two",

@@ -114,11 +114,22 @@ local function addMobs(par, mobs)
   end
 end
 
-local function addLevel(estore,level)
+local function addMap(par, mapname,res)
+  -- local floorAnim = "dungeon/slatetile"
+  -- local x = res.anims["dungeon/slatefloor"]
+  par:newChild({
+    {'name', {name="Map "..mapname}},
+    {'map', {mapname=mapname}},
+    {'pos', {x=0,y=0}},
+  })
+end
+
+local function addLevel(level, estore, res)
   local pworld
   estore:seekEntity(hasComps('physicsWorld'),function(e) pworld = e end)
   if not pworld then error("Cannot find physicsWorld") end
 
+  addMap(pworld, level.map, res)
   addWallsAndDoors(pworld, level.room)
   addItems(pworld, level.items)
   addPlayers(pworld, level.players)

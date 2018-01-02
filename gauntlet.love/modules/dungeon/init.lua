@@ -49,6 +49,7 @@ local function setupResourcesAndEntities(opts, world)
   world.resources.caches = {}
   world.resources.bodyDefs = DungeonBodyDefs
   world.resources.anims = Anims.load()
+  world.resources.maps = {} -- Maps.load()
 
   local estore = world.estore
 
@@ -62,7 +63,7 @@ local function setupResourcesAndEntities(opts, world)
     {'controller', {id='referee'}},
   })
 
-  Level.addLevel(estore, opts.levelInfo)
+  Level.addLevel(opts.levelInfo, estore, world.resources)
 end
 
 

@@ -85,11 +85,29 @@ local function drawMob(e)
   love.graphics.print(""..hp, x,y)
 end
 
+local function drawMap(e,res)
+  local pic = res.anims["dungeon/slatefloor"].pics[1]
+  local w = 32 -- pic.rect.w
+  local h = 32 -- pic.rect.h
+  local s = 2
+  for i=1,16 do
+    for j=1,12 do
+      local x = (i-1) * (s*w)
+      local y = (j-1) * (s*h)
+      local sx = s
+      if rand.roll(2) == 2 then sx = -sx end
+      if rand.roll(2) == 2 then sy = -sy end
+      love.graphics.draw(pic.image, pic.quad, x,y, r, sx,sy, 0,0)
+    end
+  end
+end
+
 local Module = {}
 
 local drawDungeon = defineDrawSystem({'pos'}, function(e,estore,res)
   -- if e.hero then drawHero(e,res) end
   -- if e.arrow then drawArrow(e,res) end
+  if e.map then drawMap(e,res) end
   if e.sprite then drawSprite(e,res) end
   if e.archer then drawArcher(e) end
   if e.survivor then drawSurvivor(e,res) end
