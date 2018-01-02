@@ -95,8 +95,8 @@ local function drawMap(e,res)
       local x = (i-1) * (s*w)
       local y = (j-1) * (s*h)
       local sx = s
-      if rand.roll(2) == 2 then sx = -sx end
-      if rand.roll(2) == 2 then sy = -sy end
+      -- if rand.roll(2) == 2 then sx = -sx end
+      -- if rand.roll(2) == 2 then sy = -sy end
       love.graphics.draw(pic.image, pic.quad, x,y, r, sx,sy, 0,0)
     end
   end
