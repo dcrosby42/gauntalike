@@ -8,28 +8,28 @@ Module.newWorld = function(opts)
   local model={
     loc= opts.loc or {0,0},
     zoom=opts.zoom or 1,
+    defaultzoom=opts.defaultzoom or 1,
     pixw=love.graphics.getWidth(),
     pixh=love.graphics.getHeight(),
+    gridsize=opts.gridsize or 64,
     mouse={},
     flags={},
   }
+  model.defaultloc = {model.loc[1],model.loc[2]}
   return model
 end
 
 
 local function handleKeyboard(model,action)
-  -- if action.key == "space" and action.state == "pressed" then
-    -- redrawPicture(model)
-  -- end
+  -- g - toggle grid
   if action.key == "g" and action.state == "pressed" then
     model.flags.drawGrid = not model.flags.drawGrid
-    print("model.flags.drawGrid",model.flags.drawGrid)
   end
-  if action.key == "a" and action.state == "pressed" then
-    model.flags.autoUpdatePicture = not model.flags.autoUpdatePicture
-  end
-  if action.key == "p" and action.state == "pressed" then
-    model.flags.drawPicture = not model.flags.drawPicture
+  -- Cmd-0 - reset loc and zoom
+  if action.key == "0" and action.state == "pressed" and action.gui then
+    model.loc[1] = model.defaultloc[1]
+    model.loc[2] = model.defaultloc[2]
+    model.zoom = model.defaultzoom
   end
 end
 
@@ -85,7 +85,6 @@ local function handleMouse(model,action)
     model.mouse.scale_center=nil
     model.mouse.scale_d0=nil
     model.mouse.scale_d1=nil
-    print("zoomui.handleMouse: zoom="..model.zoom)
 
   elseif action.state == "moved" then
 
@@ -144,33 +143,6 @@ Module.transxy = uiTransXY
 Module.uiToScreen = uiToScreen
 Module.screenToUI = screenToUI
 
-local function OLD_drawGridLines(ui)
-  local left = ui.loc[1]
-  local right = left + ui.pixw/ui.zoom
-  local top = ui.loc[2]
-  local bottom = top + ui.pixh/ui.zoom
-
-  -- draw vertical lines
-  local sx = math.round(left,0)
-  local ex = math.round(right,0)
-  for i=sx,ex,1 do
-    local a = uiTrans(ui, {i, top})
-    local b = uiTrans(ui, {i, bottom})
-    love.graphics.print(""..i,a[1],0)
-    love.graphics.line(a[1],a[2],b[1],b[2])
-  end
-
-  -- draw h lines
-  local sy = math.round(top,0)
-  local ey = math.round(bottom,0)
-  for j=sy,ey,1 do
-    local a = uiTrans(ui, {left,j})
-    local b = uiTrans(ui, {right, j})
-    love.graphics.print(""..j,0,a[2])
-    love.graphics.line(a[1],a[2],b[1],b[2])
-  end
-end
-
 local function drawGridLines(ui)
   if not ui.flags.drawGrid then return end
 
@@ -182,7 +154,7 @@ local function drawGridLines(ui)
   local top = ui.loc[2]
   local bottom = top + ui.pixh/ui.zoom
 
-  local gf = 64
+  local gf = ui.gridsize
   -- draw vertical lines
   local sx = gf*math.ceil(left/gf,0)
   local ex = gf*math.floor(right/gf,0)
