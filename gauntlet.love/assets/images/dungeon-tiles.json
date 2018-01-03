@@ -19,7 +19,61 @@
    },
    {
     "filename": "dungeon-tiles 2.ase",
+    "frame": { "x": 64, "y": 0, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 3.ase",
+    "frame": { "x": 96, "y": 0, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 4.ase",
     "frame": { "x": 0, "y": 32, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 5.ase",
+    "frame": { "x": 32, "y": 32, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 6.ase",
+    "frame": { "x": 64, "y": 32, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 7.ase",
+    "frame": { "x": 96, "y": 32, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "dungeon-tiles 8.ase",
+    "frame": { "x": 0, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
@@ -32,12 +86,18 @@
   "version": "1.2.6",
   "image": "/Users/crosby/git/games/gauntlet/gauntlet.love/assets/images/dungeon-tiles.png",
   "format": "RGBA8888",
-  "size": { "w": 64, "h": 64 },
+  "size": { "w": 128, "h": 128 },
   "scale": "1",
   "frameTags": [
    { "name": "slatefloor1", "from": 0, "to": 0, "direction": "forward" },
    { "name": "slatefloor2", "from": 1, "to": 1, "direction": "forward" },
-   { "name": "slatefloor3", "from": 2, "to": 2, "direction": "forward" }
+   { "name": "slatefloor3", "from": 2, "to": 2, "direction": "forward" },
+   { "name": "vwall1", "from": 3, "to": 3, "direction": "forward" },
+   { "name": "hwall1", "from": 4, "to": 4, "direction": "forward" },
+   { "name": "ulwall1", "from": 5, "to": 5, "direction": "forward" },
+   { "name": "urwall1", "from": 6, "to": 6, "direction": "forward" },
+   { "name": "lrwall1", "from": 7, "to": 7, "direction": "forward" },
+   { "name": "llwall1", "from": 8, "to": 8, "direction": "forward" }
   ]
  }
 }

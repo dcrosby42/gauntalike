@@ -50,6 +50,12 @@ local function newMap()
       [1]={anim="dungeon/slatefloor1"},
       [2]={anim="dungeon/slatefloor2"},
       [3]={anim="dungeon/slatefloor3"},
+      [4]={anim="dungeon/vwall1"},
+      [5]={anim="dungeon/hwall1"},
+      [6]={anim="dungeon/ulwall1"},
+      [7]={anim="dungeon/urwall1"},
+      [8]={anim="dungeon/lrwall1"},
+      [9]={anim="dungeon/llwall1"},
     },
     chunks={}
   }
@@ -150,7 +156,7 @@ end
 local function newPalette()
   local pal = {
     selected=1,
-    slots={1,2,3,0,0,0,0,0,0,0},
+    slots={1,2,3,4,5,6,7,8,9,0},
   }
   return pal
 end
@@ -226,7 +232,7 @@ local function newWorld()
     },
     palette=newPalette(),
   }
-  world.ui.flags.drawGrid = true
+  -- world.ui.flags.drawGrid = true
   return world
 end
 
@@ -291,7 +297,7 @@ local function drawWorld(world)
         local mx = chx + ((c-1) * TileWidth)
         local my = chy + ((r-1) * TileHeight)
         local x,y = trans(world.ui, mx,my)
-        local s = world.ui.zoom
+        local s = world.ui.zoom + 0.05
         love.graphics.draw(pic.image, pic.quad, x,y, 0, s,s, 0,0)
       end
     end

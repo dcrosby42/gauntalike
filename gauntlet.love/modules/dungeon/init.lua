@@ -62,7 +62,7 @@ Module.drawWorld = Base.makeDrawFunc({
   before=function(world)
     love.graphics.setBackgroundColor(40,40,40)
   end,
-  system=composeDrawSystems(drawDungeon, drawPhysics)
+  system=DrawSystem,
 })
 
 return Module
