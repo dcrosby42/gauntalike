@@ -86,7 +86,7 @@ local function drawMob(e)
 end
 
 local function drawMap(e,res)
-  local pic = res.anims["dungeon/slatefloor"].pics[1]
+  local pic = res.anims["dungeon/slatefloor1"].pics[1]
   local w = 32 -- pic.rect.w
   local h = 32 -- pic.rect.h
   local s = 2

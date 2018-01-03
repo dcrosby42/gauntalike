@@ -21,7 +21,7 @@ local function newWorld(opts)
       -- physbox=newModuleSub(Physbox,"f2"),
     },
   }
-  model.current = opts.current or "trylevel"
+  model.current = opts.current or "leveledit"
   return model
 end
 

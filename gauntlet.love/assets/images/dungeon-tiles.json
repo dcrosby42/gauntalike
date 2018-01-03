@@ -35,7 +35,9 @@
   "size": { "w": 64, "h": 64 },
   "scale": "1",
   "frameTags": [
-   { "name": "slatefloor", "from": 0, "to": 2, "direction": "forward" }
+   { "name": "slatefloor1", "from": 0, "to": 0, "direction": "forward" },
+   { "name": "slatefloor2", "from": 1, "to": 1, "direction": "forward" },
+   { "name": "slatefloor3", "from": 2, "to": 2, "direction": "forward" }
   ]
  }
 }

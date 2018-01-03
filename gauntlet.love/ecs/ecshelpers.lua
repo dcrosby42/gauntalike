@@ -1,4 +1,30 @@
 
+function requireModules(reqs)
+  local modules = {}
+  for i,req in ipairs(reqs) do
+    local module = require(req)
+    assert(module, "Cannot require '"..req.."'")
+    table.insert(modules,module)
+  end
+  return modules
+end
+
+function composeSystems(systems)
+  return function(estore,input,res)
+    for _,system in ipairs(systems) do
+      system(estore,input,res)
+    end
+  end
+end
+
+function composeDrawSystems(systems)
+  return function(estore,res)
+    for _,system in ipairs(systems) do
+      system(estore,res)
+    end
+  end
+end
+
 function hasComps(...)
   local ctypes = {...}
   local num = #ctypes

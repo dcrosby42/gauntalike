@@ -116,7 +116,7 @@ end
 
 local function addMap(par, mapname,res)
   -- local floorAnim = "dungeon/slatetile"
-  -- local x = res.anims["dungeon/slatefloor"]
+  -- local x = res.anims["dungeon/slatefloor1"]
   par:newChild({
     {'name', {name="Map "..mapname}},
     {'map', {mapname=mapname}},

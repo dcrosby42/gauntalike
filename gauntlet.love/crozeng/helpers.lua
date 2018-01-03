@@ -420,6 +420,11 @@ function split(str,char)
   return res
 end
 
+function floatstr(x, places)
+  places = places or 3
+  return ""..math.round(x,places)
+end
+
 -- split a string
 -- function string:split(delimiter)
 --   local result = { }

@@ -1,7 +1,7 @@
 local Module = {}
 
-local MIN_ZOOM=1
-local MAX_ZOOM=256
+local MIN_ZOOM=0.2
+local MAX_ZOOM=8
 
 Module.newWorld = function(opts)
   opts = opts or {}
@@ -33,6 +33,25 @@ local function handleKeyboard(model,action)
   end
 end
 
+local function updateMouseScale(model,action)
+  local cx = model.pixw/2
+  local cy = model.pixh/2
+  local d0 = math.dist(cx,cy,model.mouse.scale_pt[1], model.mouse.scale_pt[2])
+  if d0 == 0 then d0 = 0.0001 end
+  local d1 = math.dist(cx,cy,action.x,action.y)
+  if d1 == 0 then d1 = 0.0001 end
+  local z = d1/d0 * model.mouse.scale_zoom
+  -- model.zoom = z
+  model.zoom = math.clamp(z, MIN_ZOOM, MAX_ZOOM)
+
+  model.loc[1] = model.mouse.scale_center[1] - (model.pixw/2/model.zoom)
+  model.loc[2] = model.mouse.scale_center[2] - (model.pixh/2/model.zoom)
+
+  model.mouse.scale_pt_now={action.x,action.y}
+  model.mouse.scale_d0 = d0
+  model.mouse.scale_d1 = d1
+end
+
 local function handleMouse(model,action)
   local out = nil
   if action.state == "pressed" and action.button == 1 then
@@ -43,12 +62,14 @@ local function handleMouse(model,action)
 
     elseif action.ctrl then
       model.mouse.scale=true
-      model.mouse.scale_zoom=model.zoom
-      model.mouse.scale_pt={action.x,action.y}
+      model.mouse.scale_zoom=model.zoom -- zoom level at beginning of scale event
+      model.mouse.scale_pt={action.x,action.y} -- start mouse loc
+      model.mouse.scale_pt_now={action.x,action.y} -- current mouse loc
       model.mouse.scale_center={
         model.loc[1] + (model.pixw/2/model.zoom),
         model.loc[2] + (model.pixh/2/model.zoom),
       }
+      updateMouseScale(model,action)
       out=true
 
     end
@@ -60,7 +81,10 @@ local function handleMouse(model,action)
     model.mouse.scale=nil
     model.mouse.scale_zoom=nil
     model.mouse.scale_pt=nil
-    model.mouse.scale_pt_off=nil
+    model.mouse.scale_pt_now=nil
+    model.mouse.scale_center=nil
+    model.mouse.scale_d0=nil
+    model.mouse.scale_d1=nil
     print("zoomui.handleMouse: zoom="..model.zoom)
 
   elseif action.state == "moved" then
@@ -71,14 +95,7 @@ local function handleMouse(model,action)
       out=true
 
     elseif model.mouse.scale then
-      local ax = action.x - model.mouse.scale_pt[1]
-      local ay = action.y - model.mouse.scale_pt[2]
-      local dist = math.sqrt(ax*ax, ay*ay)
-      if ax < 0 then dist = -dist end
-      model.zoom = math.clamp(model.mouse.scale_zoom + dist, MIN_ZOOM, MAX_ZOOM)
-      -- adjust viewport loc to stay centered
-      model.loc[1] = model.mouse.scale_center[1] - (model.pixw/2/model.zoom)
-      model.loc[2] = model.mouse.scale_center[2] - (model.pixh/2/model.zoom)
+      updateMouseScale(model,action)
       out=true
     end
   end
@@ -105,6 +122,9 @@ end
 local function uiTrans(ui,pt)
   return {(pt[1]-ui.loc[1])*ui.zoom, (pt[2]-ui.loc[2])*ui.zoom}
 end
+local function uiTransXY(ui,x,y)
+  return (x-ui.loc[1])*ui.zoom, (y-ui.loc[2])*ui.zoom
+end
 
 local function uiToScreen(ui,x,y)
   local sx = ui.zoom * (x - ui.loc[1])
@@ -120,6 +140,7 @@ local function screenToUI(ui,x,y)
 end
 
 Module.trans = uiTrans
+Module.transxy = uiTransXY
 Module.uiToScreen = uiToScreen
 Module.screenToUI = screenToUI
 
@@ -151,6 +172,11 @@ local function OLD_drawGridLines(ui)
 end
 
 local function drawGridLines(ui)
+  if not ui.flags.drawGrid then return end
+
+  love.graphics.setColor(255,255,255,120)
+  love.graphics.setLineWidth(0.01)
+
   local left = ui.loc[1]
   local right = left + ui.pixw/ui.zoom
   local top = ui.loc[2]
@@ -176,19 +202,41 @@ local function drawGridLines(ui)
     love.graphics.print(""..j,0,a[2])
     love.graphics.line(a[1],a[2],b[1],b[2])
   end
+
+  -- Draw a dot at 0,0:
+  love.graphics.setPointSize(6)
+  love.graphics.points(unpack(uiTrans(ui, {0,0})))
+  love.graphics.setPointSize(1)
 end
 
+local function drawZoomState(model)
+  if not model.mouse.scale then return end
+
+  -- screen center
+  local cx = model.pixw/2
+  local cy = model.pixh/2
+
+  -- Draw start circle size
+  -- local d0 = math.dist(cx,cy,model.mouse.scale_pt[1],model.mouse.scale_pt[2])
+  love.graphics.setColor(0,255,0,120)
+  love.graphics.circle("line", cx, cy, model.mouse.scale_d0)
+  love.graphics.print(floatstr(model.mouse.scale_zoom), cx+model.mouse.scale_d0, cy)
+
+  -- Draw current circle size
+  local d = math.dist(cx,cy,model.mouse.scale_pt_now[1],model.mouse.scale_pt_now[2])
+  love.graphics.setColor(0,255,0,255)
+  love.graphics.circle("line", cx, cy, model.mouse.scale_d1)
+  love.graphics.print(floatstr(model.zoom), cx+model.mouse.scale_d1, cy+15)
+
+  -- Draw a green dot at screen center
+  love.graphics.setPointSize(6)
+  love.graphics.points(cx,cy)
+  love.graphics.setPointSize(1)
+end
 
 Module.drawWorld = function(model)
-  if model.flags.drawGrid then
-    love.graphics.setColor(255,255,255)
-    love.graphics.setLineWidth(0.01)
     drawGridLines(model)
-    -- Draw a dot at 0,0:
-    love.graphics.setPointSize(6)
-    love.graphics.points(unpack(uiTrans(model, {0,0})))
-    love.graphics.setPointSize(1)
-  end
+    drawZoomState(model)
 end
 
 return Module
