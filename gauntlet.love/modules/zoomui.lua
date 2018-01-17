@@ -146,7 +146,6 @@ Module.screenToUI = screenToUI
 local function drawGridLines(ui)
   if not ui.flags.drawGrid then return end
 
-  love.graphics.setColor(255,255,255,120)
   love.graphics.setLineWidth(0.01)
 
   local left = ui.loc[1]
@@ -161,7 +160,9 @@ local function drawGridLines(ui)
   for i=sx,ex,gf do
     local a = uiTrans(ui, {i, top})
     local b = uiTrans(ui, {i, bottom})
+    love.graphics.setColor(255,255,255,255)
     love.graphics.print(""..i,a[1],0)
+    love.graphics.setColor(255,255,255,120)
     love.graphics.line(a[1],a[2],b[1],b[2])
   end
 
@@ -171,7 +172,9 @@ local function drawGridLines(ui)
   for j=sy,ey,gf do
     local a = uiTrans(ui, {left,j})
     local b = uiTrans(ui, {right, j})
+    love.graphics.setColor(255,255,255,255)
     love.graphics.print(""..j,0,a[2])
+    love.graphics.setColor(255,255,255,120)
     love.graphics.line(a[1],a[2],b[1],b[2])
   end
 
