@@ -31,7 +31,7 @@ end
 
 Module.makeUpdateFunc = function(updateSystem, auxFn)
   local ControllerIds = { "one", "two" }
-  local keyboardOpts = { devId="two" }
+  local keyboardOpts = { devId="kbdController" }
 
   return function(world,action)
     local exports = nil

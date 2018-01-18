@@ -38,10 +38,12 @@ Module.newWorld = Base.makeSetupFunc(function(opts, world)
 
   phys:newChild({
     {'name', {name="Car"}},
+    {'controller',{id="kbdController"}},
+    {'script',{script='car',args='',state={keys={}}}},
     {'body',{kind='car', debugDraw=true}},
     {'pos', {x=100,y=100}},
     {'vel', {dx=0,dy=0}},
-    {'script',{script='hi',args='',state={keys={}}}},
+    {'force', {fx=0,fy=0}},
     -- {'controller', {id = pl.id}},
   })
 
