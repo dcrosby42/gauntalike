@@ -5,7 +5,7 @@ Comp.define("pos", {'x',0,'y',0, 'sx',1,'sy',1,'r',0,'ox',0,'oy',0})
 Comp.define("vel", {'dx',0,'dy',0})
 
 Comp.define("tag", {})
-Comp.define('script',{'scriptName','','on','call'})
+Comp.define('script',{'script','','args',0,'state',0})
 Comp.define("timer", {'t',0, 'reset',0, 'countDown',true, 'loop',false, 'alarm',false})
 Comp.define("controller", {'id','','leftx',0,'lefty',0,'rightx',0,'righty',0,'r1',0,'r2',0,'r3',0,'l1',0,'l2',0,'l3',0,'face1',0,'face2',0,'face3',0,'face4',0, 'select',0,'start',0})
 
