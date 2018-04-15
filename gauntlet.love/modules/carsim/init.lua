@@ -1,5 +1,7 @@
 local M = {}
 
+-- http://www.iforce2d.net/b2dtut/top-down-car
+
 -- opts
 --   type | ...
 --   body
@@ -114,17 +116,6 @@ local function newPhysicsObject(physicsWorld,opts)
   return obj
 end
 
-local function updateBodyObject(obj,body,e,estore,input,res)
-  obj.body:setPosition(getPos(e))
-  obj.body:setAngle(e.pos.r)
-  if e.vel then
-    obj.body:setLinearVelocity(e.vel.dx, e.vel.dy)
-  end
-  if e.force then
-    obj.body:applyForce(e.force.fx, e.force.fy)
-  end
-end
-
 local function drawPhysicsShape(body,shape)
   if shape:type() == "CircleShape" then
     local x,y = body:getWorldPoints(shape:getPoint())
@@ -136,6 +127,11 @@ local function drawPhysicsShape(body,shape)
     love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
   end
   love.graphics.points(body:getWorldPoint(0,0))
+end
+
+local function getLateralVelocity(body)
+  local currentRightNormal = body:getWorldVector(1,0) -- vec
+
 end
 
 --
@@ -157,8 +153,8 @@ M.newWorld = function(opts)
     },
     shape={
       type='rectangle',
-      width=100,
-      height=60,
+      width=50,
+      height=125,
     },
   }
   local obj = newPhysicsObject(world.physworld, opts)
